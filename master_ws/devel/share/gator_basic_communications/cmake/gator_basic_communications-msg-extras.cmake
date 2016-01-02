@@ -1,0 +1,2 @@
+set(gator_basic_communications_MESSAGE_FILES "/home/reggert/Documents/GatorROS/GatorResearch/master_ws/src/gator_basic_communications/msg/Num.msg;/home/reggert/Documents/GatorROS/GatorResearch/master_ws/src/gator_basic_communications/msg/TestArray.msg")
+set(gator_basic_communications_SERVICE_FILES "/home/reggert/Documents/GatorROS/GatorResearch/master_ws/src/gator_basic_communications/srv/AddTwoInts.srv")

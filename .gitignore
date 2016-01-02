@@ -45,3 +45,7 @@ qtcreator-*
 
 # Catkin custom files
 CATKIN_IGNORE
+
+# Sublime project files
+*.sublime-workspace
+*.sublime-project
