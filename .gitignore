@@ -49,6 +49,9 @@ CATKIN_IGNORE
 # Install directory
 install/
 
+# Devel directory
+devel/
+
 # Sublime project files
 *.sublime-workspace
 *.sublime-project
