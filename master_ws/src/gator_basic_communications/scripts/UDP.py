@@ -3,11 +3,13 @@ import rospy
 import socket
 from threading import Thread
 
+
 class UDPThread(Thread):
     """
     Subclass of threading.Thread. This monitors incoming packets in a separate
     thread and asychronously updates self.data as packets are recieved.
     """
+
     def __init__(self, conf_socket, buf_size=1024):
         """
         Args:
@@ -16,30 +18,42 @@ class UDPThread(Thread):
                             received at once (in bytes).
         """
         super(UDPThread, self).__init__()
-        self.cont = True  # Coninue flag. If true, the main thread loop continues to execute
-        self.data = {"data": None, "addr": None}  # The most recent data recieved
+        # Coninue flag. If true, the main thread loop continues to execute
+        self.cont = True
+        # The most recent data recieved
+        self.data = {"data": None, "addr": None, "error_count": 0}
         self.sock = conf_socket  # A configured python socket
-        self.buf_size = buf_size  # The maximum amount of data to be received at once (in bytes).
+        # The maximum amount of data to be received at once (in bytes).
+        self.buf_size = buf_size
+        self.error_threshold = 5  # After five consecutive socket errors, we
+        # declare this socket 'dead' and reset its data to None.
 
     def run(self):
         rec_buf_size = self.buf_size
         while (self.cont):
             try:
-                data, addr = self.sock.recvfrom(1024) # buffer size is 1024 bytes
-            except socket.error, e:
+                # buffer size is 1024 bytes
+                data, addr = self.sock.recvfrom(rec_buf_size)
+            except socket.error:
                 # Catches errors which occur when no new data is recieved
                 # before timeout or when non-blocking call made, etc.
+                self.data["error_count"] += 1
+                if self.data["error_count"] >= self.error_threshold:
+                    self.data["data"] = None
+                    self.data["addr"] = None
                 pass
             else:
-                self.data = {'data': data, 'addr': addr}
+                self.data = {'data': data, 'addr': addr, 'error_count': 0}
 
     def stop(self):
         self.cont = False
+
 
 class UDPReciever(object):
     """
     Object to manage the multithreaded reception of UDP packets.
     """
+
     def __init__(self, source_ip, local_port, name=None, blocking=True, timeout=5):
         """
         Args:
@@ -51,8 +65,8 @@ class UDPReciever(object):
                 socket recieve call should be blocking [True] or 
                 non-blocking [False].Defaults to True.
             timeout (Optional[number]): Optional numerical value which specifies
-                the timeout (in seconds) of a blocking socket recieve call. 
-                Set to 0 (or 0.0 or None) for an infinitely blocking call. 
+                the timeout (in seconds) of a blocking socket recieve call.
+                Set to 0 (or 0.0 or None) for an infinitely blocking call.
                 Defaults to 5.
         """
         super(UDPReciever, self).__init__()
@@ -63,13 +77,15 @@ class UDPReciever(object):
 
     def _create_socket(self, blocking, timeout):
         sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+        sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
         sock.bind((self.ip, self.port))
         if not blocking:
             # Make socket non-blocking
             sock.setblocking(False)
         else:
             # If blocking, set timeout
-            sock.setblocking(True) # This line shouldn't be necessary. Default behavior is blocking
+            # This line shouldn't be necessary. Default behavior is blocking
+            sock.setblocking(True)
             sock.settimeout(timeout)
         return sock
 
@@ -79,6 +95,7 @@ class UDPReciever(object):
     def stop(self):
         self.live.stop()
         self.live.join()
+
 
 class UDPtoROS(object):
     """
@@ -105,18 +122,18 @@ class UDPtoROS(object):
                     or debugging purposes. Defaults to None.
                 "blocking" (Optional[bool]): Optional boolean specifying whether 
                     socket recieve call should be blocking [True] or 
-                    non-blocking [False].Defaults to True.
+                    non-blocking [False]. Defaults to True.
                 "timeout" (Optional[number]): Optional numerical value which 
                     specifies the timeout (in seconds) of a blocking socket 
                     recieve call. Set to 0 (or 0.0 or None) for an infinitely
-                    blocking call. Defaults to 5.
+                    blocking call. Defaults to 0.5.
         """
         super(UDPtoROS, self).__init__()
         # Set default socket configuration values if needed.
         if "blocking" not in socket_config.keys():
             socket_config["blocking"] = True
         if "timeout" not in socket_config.keys():
-            socket_config["timeout"] = 5
+            socket_config["timeout"] = 0.5
         if "name" not in socket_config.keys():
             socket_config["name"] = None
 
@@ -125,16 +142,16 @@ class UDPtoROS(object):
             socket_config["local_port"],
             blocking=socket_config["blocking"],
             timeout=socket_config["timeout"]
-            )
+        )
         self.socket_conf = socket_config
 
         rospy.loginfo("Creating UDP Reciever \"{n}\" on port {p} listening to {a}.".format(
-                p = socket_config["local_port"],
-                a = socket_config["source_ip"],
-                n = socket_config["name"] if socket_config["name"] else "<anonymous>"
-                )
-            )
-        
+            p=socket_config["local_port"],
+            a=socket_config["source_ip"],
+            n=socket_config["name"] if socket_config["name"] else "<anonymous>"
+        )
+        )
+
     @abc.abstractmethod
     def broadcast(self, data):
         """
@@ -153,11 +170,13 @@ class UDPtoROS(object):
                 break
         self.reciever.stop()
         rospy.loginfo("Stopping UDP Reciever \"{n}\" on port {p} listening to {a}.".format(
-                p = self.socket_conf["local_port"],
-                a = self.socket_conf["source_ip"],
-                n = self.socket_conf["name"] if self.socket_conf["name"] else "<anonymous>"
-                )
-            )
+            p=self.socket_conf["local_port"],
+            a=self.socket_conf["source_ip"],
+            n=self.socket_conf["name"] if self.socket_conf[
+                "name"] else "<anonymous>"
+        )
+        )
+
 
 def main():
     pass
