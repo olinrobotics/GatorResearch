@@ -1,6 +1,7 @@
 import abc
 import rospy
 import socket
+import time
 from threading import Thread
 
 
@@ -60,8 +61,9 @@ class UDPReceiveThread(UDPThread):
         super(UDPReceiveThread, self).__init__(conf_socket)
         self.buf_size = buf_size  # The maximum amount of data to be received
         #  at once (in bytes).
-        self.data = {"data": None, "addr": None}  # The most recent data
-        # received
+        # The most recent data received
+        self.data = {"data": None, "addr": None, "error_count": 0}
+        self.error_threshold = 5
 
     def run(self):
         rec_buf_size = self.buf_size
@@ -228,21 +230,21 @@ class UDPtoROS(UDPROS):
         """
         super(UDPtoROS, self).__init__(socket_config)
         self.receiver = UDPRouter(
-                self.socket_conf["source_ip"],
-                self.socket_conf["local_port"],
-                blocking=self.socket_conf["blocking"],
-                timeout=self.socket_conf["timeout"],
-                rec_buf_size=receive_buffer_size
+            self.socket_conf["source_ip"],
+            self.socket_conf["local_port"],
+            blocking=self.socket_conf["blocking"],
+            timeout=self.socket_conf["timeout"],
+            rec_buf_size=receive_buffer_size
         )
 
         rospy.loginfo(
-                "Creating UDP Receiver \"{n}\" on port {p} listening to {"
-                "a}.".format(
-                        p=self.socket_conf["local_port"],
-                        a=self.socket_conf["source_ip"],
-                        n=self.socket_conf["name"] if self.socket_conf[
-                            "name"] else "<anonymous>"
-                )
+            "Creating UDP Receiver \"{n}\" on port {p} listening to {"
+            "a}.".format(
+                p=self.socket_conf["local_port"],
+                a=self.socket_conf["source_ip"],
+                n=self.socket_conf["name"] if self.socket_conf[
+                    "name"] else "<anonymous>"
+            )
         )
 
     @abc.abstractmethod
@@ -263,13 +265,13 @@ class UDPtoROS(UDPROS):
                 break
         self.receiver.stop()
         rospy.loginfo(
-                "Stopping UDP Receiver \"{n}\" on port {p} listening to {"
-                "a}.".format(
-                        p=self.socket_conf["local_port"],
-                        a=self.socket_conf["source_ip"],
-                        n=self.socket_conf["name"] if self.socket_conf[
-                            "name"] else "<anonymous>"
-                )
+            "Stopping UDP Receiver \"{n}\" on port {p} listening to {"
+            "a}.".format(
+                p=self.socket_conf["local_port"],
+                a=self.socket_conf["source_ip"],
+                n=self.socket_conf["name"] if self.socket_conf[
+                    "name"] else "<anonymous>"
+            )
         )
 
 
@@ -311,23 +313,23 @@ class ROStoUDP(UDPROS):
         self.send_data = ""
         self.destination = destination
         self.sender = UDPRouter(
-                self.socket_conf["source_ip"],
-                self.socket_conf["local_port"],
-                blocking=self.socket_conf["blocking"],
-                timeout=self.socket_conf["timeout"],
-                destination=destination
+            self.socket_conf["source_ip"],
+            self.socket_conf["local_port"],
+            blocking=self.socket_conf["blocking"],
+            timeout=self.socket_conf["timeout"],
+            destination=destination
         )
 
         rospy.loginfo(
-                "Creating UDP Sender \"{n}\" on local address {la}:{lp} "
-                "broadcasting to {ra}:{rp}.".format(
-                        la=self.socket_conf["source_ip"],
-                        lp=self.socket_conf["local_port"],
-                        ra=self.destination["address"],
-                        rp=self.destination["port"],
-                        n=self.socket_conf["name"] if self.socket_conf[
-                            "name"] else "<anonymous>"
-                )
+            "Creating UDP Sender \"{n}\" on local address {la}:{lp} "
+            "broadcasting to {ra}:{rp}.".format(
+                la=self.socket_conf["source_ip"],
+                lp=self.socket_conf["local_port"],
+                ra=self.destination["address"],
+                rp=self.destination["port"],
+                n=self.socket_conf["name"] if self.socket_conf[
+                    "name"] else "<anonymous>"
+            )
         )
 
     @abc.abstractmethod
@@ -343,18 +345,19 @@ class ROStoUDP(UDPROS):
     def run(self):
         self.sender.run()
         while not rospy.is_shutdown():
-            self.sender.live.data = self.send_data  # Get latest data to be sent
+            # Get latest data to be sent
+            self.sender.live.data = self.send_data
         self.sender.stop()
         rospy.loginfo(
-                "Stopping UDP Sender \"{n}\" on local address {la}:{lp} "
-                "broadcasting to {ra}:{rp}.".format(
-                        la=self.socket_conf["source_ip"],
-                        lp=self.socket_conf["local_port"],
-                        ra=self.destination["address"],
-                        rp=self.destination["port"],
-                        n=self.socket_conf["name"] if self.socket_conf[
-                            "name"] else "<anonymous>"
-                )
+            "Stopping UDP Sender \"{n}\" on local address {la}:{lp} "
+            "broadcasting to {ra}:{rp}.".format(
+                la=self.socket_conf["source_ip"],
+                lp=self.socket_conf["local_port"],
+                ra=self.destination["address"],
+                rp=self.destination["port"],
+                n=self.socket_conf["name"] if self.socket_conf[
+                    "name"] else "<anonymous>"
+            )
         )
 
 
