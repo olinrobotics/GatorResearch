@@ -55,3 +55,6 @@ devel/
 # Sublime project files
 *.sublime-workspace
 *.sublime-project
+
+# PyCharm project directory
+*.idea/
