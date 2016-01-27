@@ -3,7 +3,6 @@
 
 from simple_udp import SimplePublisher
 from std_msgs.msg import Float64
-import traceback
 import rospy
 
 
