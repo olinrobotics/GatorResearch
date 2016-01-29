@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-# read_steer_angle.py
+# read_wheel_vel.py
 
 from simple_udp import SimplePublisher
 from std_msgs.msg import Float64
