@@ -15,9 +15,9 @@ class SimplePublisher(UDPtoROS):
             rate_hz (TYPE): Description
         """
         socket_config = {
-            "source_ip": "192.168.1.10", # TODO: Tie to ros parameter or environment variable.
+            "source_ip": "192.168.1.11", # TODO: Tie to ros parameter or environment variable.
             "local_port": port,
-            "name": "test",
+            "name": name,
             "blocking": True,
             "timeout": 0.5
         }
