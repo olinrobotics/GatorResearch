@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 2.8.3)
-project(gator_basic_communications)
+project(gator_communication)
 
 ## Find catkin macros and libraries
 ## if COMPONENTS list like find_package(catkin REQUIRED COMPONENTS xyz)
@@ -127,11 +127,11 @@ include_directories(
 
 add_executable(c_basic_publisher src/c_basic_publisher.cpp)
 target_link_libraries(c_basic_publisher ${catkin_LIBRARIES})
-add_dependencies(c_basic_publisher gator_basic_communications_generate_messages_cpp)
+add_dependencies(c_basic_publisher gator_communication_generate_messages_cpp)
 
 add_executable(c_basic_subscriber src/c_basic_subscriber.cpp)
 target_link_libraries(c_basic_subscriber ${catkin_LIBRARIES})
-add_dependencies(c_basic_subscriber gator_basic_communications_generate_messages_cpp)
+add_dependencies(c_basic_subscriber gator_communication_generate_messages_cpp)
 
 
 ## Add cmake target dependencies of the library
