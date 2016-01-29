@@ -1,0 +1,14 @@
+<launch>
+    <group ns="sensors">
+        <node pkg="gator_communication" type="read_estops.py" name="estops" output="screen">
+        </node>
+        <node pkg="gator_communication" type="read_heartbeat.py" name="heartbeat" output="screen">
+        </node>
+        <group ns="vehicle_state">
+            <node pkg="gator_communication" type="read_wheel_vel.py" name="wheel_vel" output="screen">
+            </node>
+            <node pkg="gator_communication" type="read_steer_angle.py" name="steer_angle" output="screen">
+            </node>
+        </group>
+    </group>
+</launch>
