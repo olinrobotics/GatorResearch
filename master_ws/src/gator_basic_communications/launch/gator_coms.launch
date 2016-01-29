@@ -1,10 +1,10 @@
 <launch>
-    <node pkg="gator_basic_communications" type="read_estops.py" name="estops" output="screen">
+    <node pkg="gator_basic_communications" type="read_estops.py" name="/estops" output="screen">
     </node>
-    <node pkg="gator_basic_communications" type="read_heartbeat.py" name="heartbeat" output="screen">
+    <node pkg="gator_basic_communications" type="read_heartbeat.py" name="/heartbeat" output="screen">
     </node>
-    <node pkg="gator_basic_communications" type="read_wheel_vel.py" name="wheel_vel" output="screen">
+    <node pkg="gator_basic_communications" type="read_wheel_vel.py" name="/wheel_vel" output="screen">
     </node>
-    <node pkg="gator_basic_communications" type="read_steer_angle.py" name="steer_angle" output="screen">
+    <node pkg="gator_basic_communications" type="read_steer_angle.py" name="/steer_angle" output="screen">
     </node>
 </launch>
