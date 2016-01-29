@@ -14,7 +14,7 @@ class OnePublisher(UDPtoROS):
     def __init__(self):
         rospy.init_node('test_node', anonymous=True)
         socket_config = {
-            "source_ip": "192.168.1.10",
+            "source_ip": "192.168.1.10", # Address of local computer
             "local_port": 5015,
             "name": "test_receiver",
             "blocking": False,

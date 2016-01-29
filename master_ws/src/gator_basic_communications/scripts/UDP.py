@@ -238,8 +238,7 @@ class UDPtoROS(UDPROS):
         )
 
         rospy.loginfo(
-            "Creating UDP Receiver \"{n}\" on port {p} listening to {"
-            "a}.".format(
+            "Creating UDP Receiver \"{n}\" listening at {a}:{p}.".format(
                 p=self.socket_conf["local_port"],
                 a=self.socket_conf["source_ip"],
                 n=self.socket_conf["name"] if self.socket_conf[
@@ -265,8 +264,7 @@ class UDPtoROS(UDPROS):
                 break
         self.receiver.stop()
         rospy.loginfo(
-            "Stopping UDP Receiver \"{n}\" on port {p} listening to {"
-            "a}.".format(
+            "Stopping UDP Receiver \"{n}\" listening at {a}:{p}.".format(
                 p=self.socket_conf["local_port"],
                 a=self.socket_conf["source_ip"],
                 n=self.socket_conf["name"] if self.socket_conf[
