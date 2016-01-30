@@ -15,7 +15,8 @@ class SimplePublisher(UDPtoROS):
             rate_hz (TYPE): Description
         """
         socket_config = {
-            "source_ip": "192.168.1.10", # TODO: Tie to ros parameter or environment variable.
+            # TODO: Tie ip to ros parameter or environment variable.
+            "source_ip": "192.168.1.10",
             "local_port": port,
             "name": name,
             "blocking": True,
@@ -25,12 +26,17 @@ class SimplePublisher(UDPtoROS):
         self.pub = publisher
         self._data_class = self.pub.data_class()
         self.decoder = self._data_class.deserialize
-        self.rate = rospy.Rate(rate_hz) 
+        self.rate = rospy.Rate(rate_hz)
 
     def broadcast(self, data):
         rospy.logdebug("Data Recieved: {d}".format(d=data))
         if data["data"]:
-            res = self.decoder(data["data"])
+            try:
+                res = self.decoder(data["data"])
+            except TypeError:
+                # Occurs when a ROS topic such as Header expects fields
+                # but receives None when no messages have been received.
+                res = None
         else:
             res = None
         self.pub.publish(res)
@@ -41,4 +47,23 @@ class SimplePublisher(UDPtoROS):
             self.run()
         except Exception:
             traceback.print_exc()
-            self.reciever.stop()
+            self.receiver.stop()
+
+
+class SimpleHeaderPublisher(SimplePublisher):
+    """
+    Receives and publishes a header message from LabVIEW.
+    """
+
+    def __init__(self, port, name, publisher, rate_hz):
+        super(SimpleHeaderPublisher, self).__init__(
+            port, name, publisher, rate_hz)
+
+    def broadcast(self, data):
+        rospy.logdebug("Data Recieved: {d}".format(d=data))
+        if data["data"]:
+            res = self.decoder(data["data"])
+        else:
+            res = self._data_class
+        self.pub.publish(res)
+        self.rate.sleep()
