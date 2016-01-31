@@ -1,6 +1,7 @@
 import rospy
-from UDP import UDPtoROS
 import traceback
+
+from scripts.UDP import UDPtoROS
 
 
 class SimplePublisher(UDPtoROS):
@@ -43,6 +44,9 @@ class SimplePublisher(UDPtoROS):
         self.rate.sleep()
 
     def go(self):
+        """
+        Runs the receiving and publishing loops, handling exceptions by shutting down gracefully.
+        """
         try:
             self.run()
         except Exception:

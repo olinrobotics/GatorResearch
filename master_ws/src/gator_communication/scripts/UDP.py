@@ -1,3 +1,8 @@
+"""UDP.py
+This module contains classes for building UDP communications between ROS and a
+stream of UDP data. This allows ROS to interface cleanly with a LabVIEW system.
+"""
+
 import abc
 import rospy
 import socket
@@ -77,7 +82,6 @@ class UDPReceiveThread(UDPThread):
                 if self.data["error_count"] >= self.error_threshold:
                     self.data["data"] = None
                     self.data["addr"] = None
-                pass
             else:
                 self.data = {'data': data, 'addr': addr, 'error_count': 0}
 
