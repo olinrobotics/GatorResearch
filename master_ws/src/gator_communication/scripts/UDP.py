@@ -363,6 +363,71 @@ class ROStoUDP(UDPROS):
         )
 
 
+class ROStoUDPonDemand(object):
+    """
+    docstring for ROStoUDPonDemand
+    """
+
+    __metaclass__ = abc.ABCMeta
+
+    def __init__(self, socket_config, destination):
+        """
+        Args:
+            socket_config (dict): Dictionary of socket configuration values.
+                The following keys must be included as specified--
+
+                "source_ip" (str): IP address of the UDP packets to listen for.
+                "local_port" (int): Local port number to listen for UDP
+                    packets at.
+                "name" (Optional[str]): Human-readable name for identification
+                    or debugging purposes. Defaults to None.
+                "blocking" (Optional[bool]): Optional boolean specifying
+                    whether socket receive call should be blocking [True] or
+                    non-blocking [False].Defaults to True.
+                "timeout" (Optional[number]): Optional numerical value which
+                    specifies the timeout (in seconds) of a blocking socket
+                    receive call. Set to 0 (or 0.0 or None) for an infinitely
+                    blocking call. Defaults to 5.
+            destination (dict): Optional dictionary specifying an
+                "address" (string) and a "port" (int). These correspond to the
+                destination of packets to be sent.
+        """
+        super(ROStoUDPonDemand, self).__init__()
+        self.send_data = ""
+        self.dest = destination
+        self.name = socket_config["name"]
+        sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+        sock.bind((socket_config["source_ip"], socket_config["local_port"]))
+        self.sock = sock
+        self.socket_conf = socket_config
+        rospy.loginfo(
+            "Creating UDP Sender \"{n}\" on local address {la}:{lp} "
+            "broadcasting to {ra}:{rp}.".format(
+                la=self.socket_conf["source_ip"],
+                lp=self.socket_conf["local_port"],
+                ra=self.dest["address"],
+                rp=self.dest["port"],
+                n=self.socket_conf["name"] if self.socket_conf[
+                    "name"] else "<anonymous>"
+            )
+        )
+
+    @abc.abstractmethod
+    def callback(self, data):
+        """
+        Abstract method which should be called on receipt of a message from a
+        subscribed ROS topic. This must parse the received data into a string
+        and then pass that data to self.send(). The send method will send this
+        string over UDP to the destination address and port specified in
+        self.dest. As with most ROS callbacks, this should be non-blocking.
+        """
+
+    def send(self, data):
+        # rospy.logdebug()
+        self.sock.sendto(data, (self.dest["address"], self.dest["port"]))
+        # TODO: handle invalid data types.
+
+
 def main():
     pass
 

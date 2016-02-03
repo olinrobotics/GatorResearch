@@ -1,7 +1,9 @@
 import rospy
 import traceback
+from StringIO import StringIO
 
-from scripts.UDP import UDPtoROS
+from UDP import UDPtoROS
+from UDP import ROStoUDPonDemand
 
 
 class SimplePublisher(UDPtoROS):
@@ -45,7 +47,8 @@ class SimplePublisher(UDPtoROS):
 
     def go(self):
         """
-        Runs the receiving and publishing loops, handling exceptions by shutting down gracefully.
+        Runs the receiving and publishing loops, handling exceptions by
+        shutting down gracefully.
         """
         try:
             self.run()
@@ -71,3 +74,44 @@ class SimpleHeaderPublisher(SimplePublisher):
             res = self._data_class
         self.pub.publish(res)
         self.rate.sleep()
+
+
+class OnDemandSubscriber(ROStoUDPonDemand):
+    """docstring for OnDemandSubscriber"""
+
+    def __init__(self, port, name, destination):
+        socket_config = {
+            # TODO: Tie ip to ros parameter or environment variable.
+            "source_ip": "192.168.1.10",
+            "local_port": port,
+            "name": name,
+        }
+        super(OnDemandSubscriber, self).__init__(socket_config, destination)
+        self._sub = None
+        self._data_class = None
+        self.serializer = None
+
+    @property
+    def sub(self):
+        return self._sub
+
+    @sub.setter
+    def sub(self, new_sub):
+        # TODO: Check type of new_sub
+        if isinstance(new_sub, rospy.Subscriber):
+            self._sub = new_sub
+            self._data_class = new_sub.data_class()
+            self.serializer = self._data_class.serialize
+        else:
+            rospy.logerr(
+                "OnDemandSubscriber {n} has been given an invalid subscriber."
+                " It may not broadcast.").format(n=self.name)
+
+    def callback(self, data):
+        ser_buff = StringIO()
+        data.serialize(ser_buff)
+        self.send(ser_buff.getvalue())
+        ser_buff.close()
+
+    def go(self):
+        rospy.spin()
