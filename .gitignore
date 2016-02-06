@@ -58,3 +58,6 @@ devel/
 
 # PyCharm project directory
 *.idea/
+
+# 3rd-Party ROS Packages built from source
+open_street_map
