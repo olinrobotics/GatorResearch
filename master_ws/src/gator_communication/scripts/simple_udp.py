@@ -1,6 +1,7 @@
 import rospy
 import traceback
 from StringIO import StringIO
+import struct
 
 from UDP import UDPtoROS
 from UDP import ROStoUDPonDemand
@@ -112,6 +113,43 @@ class OnDemandSubscriber(ROStoUDPonDemand):
         data.serialize(ser_buff)
         self.send(ser_buff.getvalue())
         ser_buff.close()
+
+    def go(self):
+        rospy.spin()
+
+
+class CmdVelSubscriber(ROStoUDPonDemand):
+    """docstring for CmdVelSubscriber"""
+
+    def __init__(self, port, name, destination):
+        socket_config = {
+            # TODO: Tie ip to ros parameter or environment variable.
+            "source_ip": "192.168.1.10",
+            "local_port": port,
+            "name": name,
+        }
+        super(CmdVelSubscriber, self).__init__(socket_config, destination)
+        self._sub = None
+
+    @property
+    def sub(self):
+        return self._sub
+
+    @sub.setter
+    def sub(self, new_sub):
+        # TODO: Check type of new_sub
+        if isinstance(new_sub, rospy.Subscriber):
+            self._sub = new_sub
+        else:
+            rospy.logerr(
+                "CmdVelSubscriber {n} has been given an invalid subscriber."
+                " It may not broadcast.").format(n=self.name)
+
+    def callback(self, data):
+        angle_data = data.angular.z
+        vel_data = data.linear.x
+        send_str = struct.pack('>dd', vel_data, angle_data)
+        self.send(send_str)
 
     def go(self):
         rospy.spin()

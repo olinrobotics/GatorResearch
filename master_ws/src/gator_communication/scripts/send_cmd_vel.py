@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # send_cmd_vel.py
 
-from simple_udp import OnDemandSubscriber
+from simple_udp import CmdVelSubscriber
 from geometry_msgs.msg import Twist
 import rospy
 
@@ -14,7 +14,7 @@ def main():
     }
     name = 'cmd_vel'
     rospy.init_node('send_cmd_vel', anonymous=False)
-    cmd_vel = OnDemandSubscriber(local_port, name, destination)
+    cmd_vel = CmdVelSubscriber(local_port, name, destination)
     cmd_vel.sub = rospy.Subscriber("/cmd_vel", Twist, cmd_vel.callback)
     cmd_vel.go()
 
