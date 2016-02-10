@@ -7,10 +7,10 @@ import rospy
 
 
 def main():
-    local_port = 6015
+    local_port = 60015
     destination = {
         "address": "192.168.1.11",
-        "port": 6015
+        "port": 60015
     }
     name = 'cmd_vel'
     rospy.init_node('send_cmd_vel', anonymous=False)
