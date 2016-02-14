@@ -5,6 +5,7 @@ import struct
 
 from UDP import UDPtoROS
 from UDP import ROStoUDPonDemand
+import constants as cs
 
 
 class SimplePublisher(UDPtoROS):
@@ -148,7 +149,11 @@ class CmdVelSubscriber(ROStoUDPonDemand):
     def callback(self, data):
         angle_data = data.angular.z
         vel_data = data.linear.x
-        send_str = struct.pack('>dd', vel_data, angle_data)
+        send_str = struct.pack(
+            '>{}dd'.format(cs.trans_type),
+            cs.trans_prefix,
+            vel_data,
+            angle_data)
         self.send(send_str)
 
     def go(self):
