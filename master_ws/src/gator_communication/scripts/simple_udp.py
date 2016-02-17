@@ -9,15 +9,20 @@ import constants as cs
 
 
 class SimplePublisher(UDPtoROS):
-    """This is a simple example of how to use UDPtoROS """
+    """
+    This is a simple example of how to use UDPtoROS. This works to unpack a
+    single value from a transmitted UDP stream and publish it to a ROS topic.
+    """
 
-    def __init__(self, port, name, publisher, rate_hz):
+    def __init__(self, port, name, publisher, rate_hz, decode_str):
         """
         Args:
             port (TYPE): Description
             name (TYPE): Description
             publisher (TYPE): Description
             rate_hz (TYPE): Description
+            decode_str (str): String used by struct.unpack to unpack single
+                value from received UDP string.
         """
         socket_config = {
             # TODO: Tie ip to ros parameter or environment variable.
@@ -29,22 +34,16 @@ class SimplePublisher(UDPtoROS):
         }
         super(SimplePublisher, self).__init__(socket_config)
         self.pub = publisher
-        self._data_class = self.pub.data_class()
-        self.decoder = self._data_class.deserialize
         self.rate = rospy.Rate(rate_hz)
+        self.decode_str = decode_str
 
     def broadcast(self, data):
         rospy.logdebug("Data Recieved: {d}".format(d=data))
         if data["data"]:
-            try:
-                res = self.decoder(data["data"])
-            except TypeError:
-                # Occurs when a ROS topic such as Header expects fields
-                # but receives None when no messages have been received.
-                res = None
+            res = struct.unpack(self.decode_str, data["data"])
+            self.pub.publish(res[0])
         else:
             res = None
-        self.pub.publish(res)
         self.rate.sleep()
 
     def go(self):

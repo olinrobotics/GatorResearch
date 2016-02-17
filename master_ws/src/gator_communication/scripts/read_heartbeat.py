@@ -12,7 +12,7 @@ def main():
     rate = 2  # Hz
     rospy.init_node('read_heartbeat', anonymous=False)
     publisher = rospy.Publisher(name, Header, queue_size=3)
-    heartbeat = SimpleHeaderPublisher(port, name, publisher, rate)
+    heartbeat = SimpleHeaderPublisher(port, name, publisher, rate,  ">?")
     heartbeat.go()
 
 if __name__ == '__main__':

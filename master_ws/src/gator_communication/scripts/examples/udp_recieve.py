@@ -4,7 +4,7 @@
 import socket
 
 UDP_IP = "192.168.1.10"
-UDP_PORT = 5012
+UDP_PORT = 5015
 
 sock = socket.socket(socket.AF_INET, # Internet
                      socket.SOCK_DGRAM) # UDP
@@ -18,5 +18,6 @@ while True:
     except socket.error, e:
         pass
     else:
-        print "received message:", data
+        print len(data)
+        print "received message: %X" % data
         print addr

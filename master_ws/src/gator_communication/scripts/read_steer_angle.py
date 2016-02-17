@@ -7,12 +7,12 @@ import rospy
 
 
 def main():
-    port = 5015
+    port = 5016
     name = 'steer_angle'
     rate = 4 # Hz
     rospy.init_node('read_steer_angle', anonymous=False)
     publisher = rospy.Publisher(name, Float64, queue_size=5)
-    steer_angles = SimplePublisher(port, name, publisher, rate)
+    steer_angles = SimplePublisher(port, name, publisher, rate, ">d")
     steer_angles.go()
 
 if __name__ == '__main__':
