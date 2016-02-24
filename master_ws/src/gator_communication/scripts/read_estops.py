@@ -8,7 +8,7 @@ import rospy
 
 def main():
     port = 5017
-    name = 'estop'
+    name = 'vehicle_hardware_stop'
     rate = 30  # Hz
     rospy.init_node('read_estops', anonymous=False)
     publisher = rospy.Publisher(name, Bool, queue_size=5)

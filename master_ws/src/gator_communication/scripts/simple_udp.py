@@ -17,10 +17,14 @@ class SimplePublisher(UDPtoROS):
     def __init__(self, port, name, publisher, rate_hz, decode_str):
         """
         Args:
-            port (TYPE): Description
-            name (TYPE): Description
-            publisher (TYPE): Description
-            rate_hz (TYPE): Description
+            port (int): Local port on which to receive incoming UDP data. This
+                should be unique among all local UDP receivers and transmitters.
+            name (str): A human-readable name for this publisher to aid in 
+                monitoring and debugging.
+            publisher (rospy.Publisher): Configured ROS publisher on which the 
+                received data will be broadcast.
+            rate_hz (num): The rate, in Hertz, at which this topic will be
+                published on the specified publisher.
             decode_str (str): String used by struct.unpack to unpack single
                 value from received UDP string.
         """
@@ -58,23 +62,58 @@ class SimplePublisher(UDPtoROS):
             self.receiver.stop()
 
 
-class SimpleHeaderPublisher(SimplePublisher):
+class TopicPublisher(UDPtoROS):
     """
-    Receives and publishes a header message from LabVIEW.
+    Uses UDPtoROS to interpret an incoming UDP string which has already been
+    formatted as a ROS message. The type of message interpreted from UDP is
+    determined by the message type specified by the ROS publisher.
     """
 
     def __init__(self, port, name, publisher, rate_hz):
-        super(SimpleHeaderPublisher, self).__init__(
-            port, name, publisher, rate_hz)
+        """
+        Args:
+            port (int): Local port on which to receive incoming UDP data. This
+                should be unique among all local UDP receivers and transmitters.
+            name (str): A human-readable name for this publisher to aid in 
+                monitoring and debugging.
+            publisher (rospy.Publisher): Configured ROS publisher on which the 
+                received data will be broadcast.
+            rate_hz (num): The rate, in Hertz, at which this topic will be
+                published on the specified publisher.
+        """
+        socket_config = {
+            # TODO: Tie ip to ros parameter or environment variable.
+            "source_ip": "192.168.1.10",
+            "local_port": port,
+            "name": name,
+            "blocking": True,
+            "timeout": 0.5
+        }
+        super(TopicPublisher, self).__init__(socket_config)
+        self.pub = publisher
+        self.rate = rospy.Rate(rate_hz)
+        self._data_class = self.pub.data_class()
+        self.decoder = self._data_class.deserialize
 
     def broadcast(self, data):
         rospy.logdebug("Data Recieved: {d}".format(d=data))
         if data["data"]:
             res = self.decoder(data["data"])
+            self.pub.publish(res)
         else:
-            res = self._data_class
-        self.pub.publish(res)
+            res = None
         self.rate.sleep()
+
+    def go(self):
+        """
+        Runs the receiving and publishing loops, handling exceptions by
+        shutting down gracefully.
+        """
+        try:
+            self.run()
+        except Exception:
+            traceback.print_exc()
+            self.receiver.stop()
 
 
 class OnDemandSubscriber(ROStoUDPonDemand):

@@ -1,7 +1,9 @@
 <launch>
     <group ns="sensors">
-        <node pkg="gator_communication" type="read_estops.py" name="estops" output="screen">
-        </node>
+        <group ns="estop">
+            <node pkg="gator_communication" type="read_estops.py" name="gator_physical" output="screen">
+            </node>
+        </group>
         <node pkg="gator_communication" type="read_heartbeat.py" name="heartbeat" output="screen">
         </node>
         <group ns="vehicle_state">
@@ -9,6 +11,16 @@
             </node>
             <node pkg="gator_communication" type="read_steer_angle.py" name="steer_angle" output="screen">
             </node>
+        </group>
+        <group ns="lidar">
+            <group ns="left">
+                <node pkg="gator_communication" type="read_left_lidar_tilt.py" name="tilt_angle" output="screen">
+                </node>
+            </group>
+            <group ns="right">
+                <node pkg="gator_communication" type="read_right_lidar_tilt.py" name="tilt_angle" output="screen">
+                </node>
+            </group>
         </group>
     </group>
 </launch>
