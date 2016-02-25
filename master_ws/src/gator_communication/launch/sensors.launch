@@ -1,5 +1,9 @@
 <launch>
     <group ns="sensors">
+        <group ns="camera">
+            <node pkg="gator_communication" type="read_front_camera.py" name="front_camera" output="screen">
+            </node>
+        </group>
         <group ns="estop">
             <node pkg="gator_communication" type="read_estops.py" name="gator_physical" output="screen">
             </node>
