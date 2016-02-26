@@ -9,7 +9,7 @@ import rospy
 def main():
     port = 5016
     name = 'steer_angle'
-    rate = 4 # Hz
+    rate = 10 # Hz
     rospy.init_node('read_steer_angle', anonymous=False)
     publisher = rospy.Publisher(name, Float64, queue_size=5)
     steer_angles = SimplePublisher(port, name, publisher, rate, ">d")
