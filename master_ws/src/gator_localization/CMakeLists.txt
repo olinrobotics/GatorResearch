@@ -8,7 +8,6 @@ find_package(catkin REQUIRED COMPONENTS
   amcl
   gator_communication
   gator_mapping
-  gator_msgs
   gator_odom
   geometry_msgs
   nav_msgs
