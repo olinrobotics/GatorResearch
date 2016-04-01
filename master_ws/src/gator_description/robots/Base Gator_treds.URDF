@@ -1,0 +1,21 @@
+<robot
+  name="Gator">
+  <link
+    name="BaseGator">
+    
+    <visual>
+      <origin
+        xyz="1.5707963267949 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://Base Gator_treds/meshes/BaseGator.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.79216 0.81961 0.93333 1" />
+      </material>
+    </visual>
+  </link>
+</robot>
