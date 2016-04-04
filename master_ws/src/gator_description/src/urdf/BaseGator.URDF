@@ -1,0 +1,94 @@
+<robot name="Gator">
+
+  <link name="BaseGator">
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+        <mesh filename="package://gator_description/src/urdf/Base_Gator_treds.stl" />
+      </geometry>
+      <material name="">
+        <color rgba="0.79216 0.81961 0.93333 1" />
+      </material>
+    </visual>
+  </link>
+
+  <link name="FrontPegBoard">
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+        <mesh filename="package://gator_description/src/urdf/FrontPegBoardAssem.stl" />
+      </geometry>
+      <material
+        name="">
+        <color rgba="0.79216 0.81961 0.93333 1" />
+      </material>
+    </visual>
+  </link>
+
+  <link name="FrontCam">
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+        <mesh filename="package://gator_description/src/urdf/FrontCamAssem.stl" />
+      </geometry>
+      <material
+        name="">
+        <color rgba="0.79216 0.81961 0.93333 1" />
+      </material>
+    </visual>
+  </link>
+
+  <link name="LeftTUMount">
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+        <mesh filename="package://gator_description/src/urdf/LeftTU.stl" />
+      </geometry>
+      <material
+        name="">
+        <color rgba="0.79216 0.81961 0.93333 1" />
+      </material>
+    </visual>
+  </link>
+
+  <link name="LeftLIDAR">
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+        <mesh filename="package://gator_description/src/urdf/LeftLIDAR.stl" />
+      </geometry>
+      <material
+        name="">
+        <color rgba="0.79216 0.81961 0.93333 1" />
+      </material>
+    </visual>
+  </link>
+
+
+
+
+  <joint name="Base_FrontPeg" type="fixed">
+    <parent link="BaseGator" />
+    <child link="FrontPegBoard" />
+    <origin xyz="2.14992780 0 0.892175" rpy="0 0 0" />
+  </joint>
+
+  <joint name="FrontPeg_to_FrontCam" type="fixed">
+    <parent link="FrontPegBoard" />
+    <child link="FrontCam" />
+    <origin xyz="0.00429497 0.0139485 0.04805620" rpy="0 0 0" />
+  </joint>
+
+  <joint name="FrontPeg_to_LeftTUMount" type="fixed">
+    <parent link="FrontPegBoard" />
+    <child link="LeftTUMount" />
+    <origin xyz="0.08255 0.19685 0.009525" rpy="0 0 0" />
+  </joint>
+
+  <joint name="LeftTUMount_to_LeftLIDAR" type="continuous">
+    <parent link="LeftTUMount" />
+    <child link="LeftLIDAR" />
+    <origin xyz="-0.03978611 0.37064375 0.17109429" rpy="0 0 0.78539816339" />
+  </joint>
+
+</robot>
