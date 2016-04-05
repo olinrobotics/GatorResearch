@@ -64,6 +64,32 @@
     </visual>
   </link>
 
+  <link name="RightTUMount">
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+        <mesh filename="package://gator_description/src/urdf/RightTU.stl" />
+      </geometry>
+      <material
+        name="">
+        <color rgba="0.79216 0.81961 0.93333 1" />
+      </material>
+    </visual>
+  </link>
+
+   <link name="RightLIDAR">
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+        <mesh filename="package://gator_description/src/urdf/RightLIDAR.stl" />
+      </geometry>
+      <material
+        name="">
+        <color rgba="0.79216 0.81961 0.93333 1" />
+      </material>
+    </visual>
+  </link>
+
 
 
 
@@ -90,5 +116,18 @@
     <child link="LeftLIDAR" />
     <origin xyz="-0.03978611 0.37064375 0.17109429" rpy="0 0 0.78539816339" />
   </joint>
+
+  <joint name="FrontPeg_to_RightTUMount" type="fixed">
+    <parent link="FrontPegBoard" />
+    <child link="RightTUMount" />
+    <origin xyz="0.08255 -0.19685 0.009525" rpy="0 0 0" />
+  </joint>
+
+  <joint name="RightTUMount_to_RightLIDAR" type="continuous">
+    <parent link="RightTUMount" />
+    <child link="RightLIDAR" />
+    <origin xyz="-0.04054939 -0.37181215 0.18742358" rpy="0 0 -0.78539816339" />
+  </joint>
+
 
 </robot>
