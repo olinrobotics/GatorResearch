@@ -90,25 +90,53 @@
     </visual>
   </link>
 
+  <link name="GPS">
+    <visual>
+      <geometry>
+        <cylinder length="0.1" radius="0.1" />
+      </geometry>
+    </visual>
+  </link>
+
+  <link name="IMU">
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+        <box size="0.0635 0.0635 0.0254" />
+      </geometry>
+    </visual>
+  </link>
 
 
 
   <joint name="Base_FrontPeg" type="fixed">
     <parent link="BaseGator" />
     <child link="FrontPegBoard" />
-    <origin xyz="2.14992780 0 0.892175" rpy="0 0 0" />
+    <origin xyz="2.23 0 0.885" rpy="0 0 0" />
+  </joint>
+
+  <joint name="Base_GPS" type="fixed">
+    <parent link="BaseGator" />
+    <child link="GPS" />
+    <origin xyz="0.8382 0 1.97" rpy="0 0 0" />
+  </joint>
+
+  <joint name="Base_IMU" type="fixed">
+    <parent link="BaseGator" />
+    <child link="IMU" />
+    <origin xyz="-0.04175 -0.483 1.1073" rpy="0 0 3.14" />
   </joint>
 
   <joint name="FrontPeg_to_FrontCam" type="fixed">
     <parent link="FrontPegBoard" />
     <child link="FrontCam" />
-    <origin xyz="0.00429497 0.0139485 0.04805620" rpy="0 0 0" />
+    <origin xyz="0.0065 0 0.0518" rpy="0 0 0" />
   </joint>
 
   <joint name="FrontPeg_to_LeftTUMount" type="fixed">
     <parent link="FrontPegBoard" />
     <child link="LeftTUMount" />
-    <origin xyz="0.08255 0.19685 0.009525" rpy="0 0 0" />
+    <origin xyz="0.0825 0.196 0.0128" rpy="0 0 0" />
   </joint>
 
   <joint name="LeftTUMount_to_LeftLIDAR" type="continuous">
@@ -120,7 +148,7 @@
   <joint name="FrontPeg_to_RightTUMount" type="fixed">
     <parent link="FrontPegBoard" />
     <child link="RightTUMount" />
-    <origin xyz="0.08255 -0.19685 0.009525" rpy="0 0 0" />
+    <origin xyz="0.0825 -0.196 0.0128" rpy="0 0 0" />
   </joint>
 
   <joint name="RightTUMount_to_RightLIDAR" type="continuous">
