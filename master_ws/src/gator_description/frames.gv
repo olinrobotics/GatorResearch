@@ -1,0 +1,14 @@
+digraph G {
+"BaseGator" -> "FrontPegBoard"[label="Broadcaster: /robot_state_publisher\nAverage rate: 50.191 Hz\nMost recent transform: 1460130968.019 ( 0.002 sec old)\nBuffer length: 4.921 sec\n"];
+"BaseGator" -> "GPS"[label="Broadcaster: /robot_state_publisher\nAverage rate: 50.191 Hz\nMost recent transform: 1460130968.019 ( 0.002 sec old)\nBuffer length: 4.921 sec\n"];
+"BaseGator" -> "IMU"[label="Broadcaster: /robot_state_publisher\nAverage rate: 50.191 Hz\nMost recent transform: 1460130968.019 ( 0.002 sec old)\nBuffer length: 4.921 sec\n"];
+"FrontPegBoard" -> "FrontCam"[label="Broadcaster: /robot_state_publisher\nAverage rate: 50.191 Hz\nMost recent transform: 1460130968.019 ( 0.002 sec old)\nBuffer length: 4.921 sec\n"];
+"FrontPegBoard" -> "LeftTUMount"[label="Broadcaster: /robot_state_publisher\nAverage rate: 50.191 Hz\nMost recent transform: 1460130968.019 ( 0.002 sec old)\nBuffer length: 4.921 sec\n"];
+"FrontPegBoard" -> "RightTUMount"[label="Broadcaster: /robot_state_publisher\nAverage rate: 50.191 Hz\nMost recent transform: 1460130968.019 ( 0.002 sec old)\nBuffer length: 4.921 sec\n"];
+"LeftTUMount" -> "LeftLIDAR"[label="Broadcaster: /robot_state_publisher\nAverage rate: 10.208 Hz\nMost recent transform: 1460130967.955 ( 0.066 sec old)\nBuffer length: 4.800 sec\n"];
+"RightTUMount" -> "RightLIDAR"[label="Broadcaster: /robot_state_publisher\nAverage rate: 10.208 Hz\nMost recent transform: 1460130967.955 ( 0.066 sec old)\nBuffer length: 4.800 sec\n"];
+edge [style=invis];
+ subgraph cluster_legend { style=bold; color=black; label ="view_frames Result";
+"Recorded at time: 1460130968.021"[ shape=plaintext ] ;
+ }->"BaseGator";
+}
