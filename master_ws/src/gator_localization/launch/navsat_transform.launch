@@ -61,7 +61,7 @@
 
         <!-- If this is true, the altitude is set to 0 in the output odometry message. Defaults
            to false. -->
-        <param name="zero_altitude" value="false" />
+        <param name="zero_altitude" value="true" />
 
         <!-- If this is true, the transform world_frame->utm transform is broadcast
            for use by other nodes. Defaults to false. -->
@@ -78,7 +78,7 @@
            cannot use your odometry source for yaw if you have only one source for yaw
            data and it has its differential or relative parameter set to true. Defaults
            to false. -->
-        <!-- We will use the output of robot_state_publisher to determine heading -->
+        <!-- We will use the output of robot_localization to determine heading -->
         <param name="use_odometry_yaw" value="true" />
 
         <param name="wait_for_datum" value="false" />
@@ -89,15 +89,15 @@
       heading corresponds to east. -->
         <!-- <rosparam param="datum">[55.944904, -3.186693, 0.0, map, base_link]</rosparam> -->
 
-        Placeholders for input remapping. Set your topic names as the "to" values.
+      <!-- Placeholders for input remapping. Set your topic names as the "to" values. -->
       <remap from="/imu/data" to="/sensors/imu"/>
 
-      <remap from=world_frame"/odometry/filtered" to=""/>
+      <remap from="/odometry/filtered" to=""/>
 
       <remap from="/gps/fix" to=""/>
 
      
-        Placeholders for output remapping.
+      <!-- Placeholders for output remapping -->
       <remap from="/odometry/gps" to=""/>
 
       <remap from="/gps/filtered" to=""/>

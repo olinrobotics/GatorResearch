@@ -7,7 +7,7 @@ project(gator_localization)
 find_package(catkin REQUIRED COMPONENTS
   amcl
   gator_communication
-  gator_mapping
+##  gator_mapping
   gator_odom
   geometry_msgs
   nav_msgs
