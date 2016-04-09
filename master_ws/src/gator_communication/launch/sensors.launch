@@ -26,7 +26,11 @@
                 </node>
             </group>
         </group>
-        <node pkg="gator_communication" type="read_imu.py" name="imu" output="screen">
-        </node>
+        <group ns="imu">
+          <node pkg="gator_communication" type="read_imu.py" name="imu" output="screen">
+          </node>
+          <node pkg="gator_communication" type="convert_imu.py" name="convert_imu" output="screen">
+          </node>
+        </group>
     </group>
 </launch>
