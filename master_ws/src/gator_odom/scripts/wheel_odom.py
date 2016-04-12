@@ -5,6 +5,7 @@ from nav_msgs.msg import Odometry
 from geometry_msgs.msg import Point, Quaternion, TransformStamped
 from std_msgs.msg import Float32, Float64
 
+import tf
 from tf import transformations
 
 from math import radians, sin, cos, tan
@@ -48,6 +49,7 @@ class WheelOdometryNode(object):
         super(WheelOdometryNode, self).__init__()
         self.broadcast_tf = broadcast_tf
         self.pub = pub_odom
+        self.tf_br = None
         if broadcast_tf:
             self.tf_br = tf.TransformBroadcaster()
         self.wheel_sub = rospy.Subscriber(
@@ -67,6 +69,8 @@ class WheelOdometryNode(object):
         self.wheel_data = None
         self.steer_data = None
 
+        self.vehicle_length = float(rospy.get_param('vehicle_length'))  # Len. from rear diff to fr. axle
+
         # Assume starting at the origin & vehicle facing +x direction
         self.x_est = 0
         self.y_est = 0
@@ -83,10 +87,10 @@ class WheelOdometryNode(object):
         self.steer_data = data
 
     def compute_odom(self):
-        L = rospy.get_param('vehicle_length')  # Len from rear diff to fr. axle
+
         steer_rad = radians(self.steer_data)
         d_dr = self.wheel_data
-        d_theta = d_dr/float(L) * tan(steer_rad)
+        d_theta = d_dr/self.vehicle_length * tan(steer_rad)
         dx = d_dr * cos(self.theta_est + d_theta/2)
         dy = d_dr * sin(self.theta_est + d_theta/2)
         self.x_est += dx
