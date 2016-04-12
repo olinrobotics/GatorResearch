@@ -35,9 +35,9 @@ class WheelOdometryNode(object):
             Args:
                 pub_odom (rospy.Publisher()): Configured ROS odometry publisher
                 wheel_vel_topic (str): Name of a topic publishing wheel
-                    velocity information
+                    velocity information in meters per second.
                 wheel_vel_type (msg type): Data type of a topic publishing
-                    wheel velocity information
+                    wheel velocity information in meters per second.
                 steer_angle_topic (str): Name of a topic publishing steering
                      angle information
                 steer_angle_type (msg type): Data of a topic publishing
@@ -139,8 +139,21 @@ class WheelOdometryNode(object):
         msg.child_frame_id = self.child_frame_id
         msg.pose.pose.position = Point(self.x_est, self.y_est, 0)  # z = 0
         msg.pose.pose.orientation = quat_rot
+        msg.pose.covariance = [1e-3, 0, 0, 0, 0, 0,  # 1e-3 is TurtleBot
+                               0, 1e-3, 0, 0, 0, 0,  # default wheel odom
+                               0, 0, 1e-3, 0, 0, 0,  # covariances.
+                               0, 0, 0, 1e-3, 0, 0,  # Tune if necessary.
+                               0, 0, 0, 0, 1e-3, 0,  # UMBmark?
+                               0, 0, 0, 0, 0, 1e-3]
+
         msg.twist.twist.linear = Vector3(self.vx_calc, self.vy_calc, 0)  # z-velocity = 0
-        msg.twist.twist.angular = Vector3(0, 0, self.az_calc)  # No x- or y- angular velocity.
+        msg.twist.twist.angular = Vector3(0, 0, self.az_calc)  # No x- or y- angular velocities
+        msg.twist.covariance = [1e-3, 0, 0, 0, 0, 0,  # 1e-3 is TurtleBot
+                                0, 1e-3, 0, 0, 0, 0,  # default wheel odom
+                                0, 0, 1e-3, 0, 0, 0,  # covariances.
+                                0, 0, 0, 1e-3, 0, 0,  # Tune if necessary.
+                                0, 0, 0, 0, 1e-3, 0,  # UMBmark?
+                                0, 0, 0, 0, 0, 1e-3] 
 
         self.pub.publish()
 
