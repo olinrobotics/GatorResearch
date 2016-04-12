@@ -64,7 +64,9 @@
         <param name="zero_altitude" value="true" />
 
         <!-- If this is true, the transform world_frame->utm transform is broadcast
-           for use by other nodes. Defaults to false. -->
+           for use by other nodes. Defaults to false. 
+
+           Based on the configuration of this node's inputs and outputs, this transform should be from UTM to odom frame-->
         <param name="broadcast_utm_transform" value="true" />
 
         <!-- If this is true, all received odometry data is converted back to a lat/lon
@@ -92,15 +94,15 @@
       <!-- Placeholders for input remapping. Set your topic names as the "to" values. -->
       <remap from="/imu/data" to="/sensors/imu"/>
 
-      <remap from="/odometry/filtered" to=""/>
+      <remap from="/odometry/filtered" to="/odometry/continuous_filtered"/>
 
-      <remap from="/gps/fix" to=""/>
+      <!-- <remap from="/gps/fix" to=""/> -->
 
      
       <!-- Placeholders for output remapping -->
-      <remap from="/odometry/gps" to=""/>
+      <!-- <remap from="/odometry/gps" to=""/> -->
 
-      <remap from="/gps/filtered" to=""/>
+      <!-- <remap from="/gps/filtered" to=""/> -->
 
      
     </node>

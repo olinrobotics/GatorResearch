@@ -141,9 +141,9 @@
                                                           0,    0,    0,    0,    0,    0,    0,    0,    0,    0,     0,     0,     0,    0,    1e-9]</rosparam>
 
 
-      <!--  Placeholder for output topic remapping
-      <remap from="odometry/filtered" to=""/>
-      -->
+      <!--  Placeholder for output topic remapping -->
+      <remap from="odometry/filtered" to="odometry/continuous_filtered"/>
+      
 
     </node>
 
