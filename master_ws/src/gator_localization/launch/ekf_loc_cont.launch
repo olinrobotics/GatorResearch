@@ -1,0 +1,150 @@
+<launch>
+	<!-- Launch ekf_localization_node for continuous data-->
+    <node pkg="robot_localization" type="ekf_localization_node" name="ekf_localization_continuous" clear_params="true">
+      <param name="frequency" value="30"/>
+      <param name="sensor_timeout" value="0.1"/>
+      <param name="two_d_mode" value="false"/>
+
+      <!-- Defaults to "map" if unspecified -->
+      <param name="map_frame" value="map"/>
+      <!-- Defaults to "odom" if unspecified -->
+      <param name="odom_frame" value="odom"/>
+      <!-- Defaults to "base_link" if unspecified -->
+      <!-- Base link frame as specified in gator URDF -->
+      <param name="base_link_frame" value="BaseGator"/>
+      <!-- world_frame set to odom since this is the instance of robot_localization handling continuous data -->
+      <param name="world_frame" value="odom"/>
+      <param name="transform_time_offset" value="0.0"/>
+      <!-- The filter accepts an arbitrary number of inputs from each input message type (Odometry, PoseStamped,
+           TwistStamped, Imu). To add a new one, simply append the next number in the sequence to its base name,
+           e.g., odom0, odom1, twist0, twist1, imu0, imu1, imu2, etc. The value should be the topic name. These
+           parameters obviously have no default values, and must be specified. -->
+      <param name="odom0" value="/wheel_odom"/>
+      <param name="imu0" value="/imu/data"/>
+
+      <!-- Each sensor reading updates some or all of the filter's state. These options give you greater control over
+           which values from each measurement are fed to the filter. For example, if you have an odometry message as input,
+           but only want to use its Z position value, then set the entire vector to false, except for the third entry.
+           The order of the values is x, y, z, roll, pitch, yaw, vx, vy, vz, vroll, vpitch, vyaw, ax, ay, az. Note that not some
+           message types lack certain variables. For example, a TwistWithCovarianceStamped message has no pose information, so
+           the first six values would be meaningless in that case. Each vector defaults to all false if unspecified, effectively
+           making this parameter required for each sensor. -->
+      <rosparam param="odom0_config">[false, false, false,
+                                      false, false, false,
+                                      true,  true, true,
+                                      false, false, false,
+                                      false, false, false]</rosparam>
+
+      <rosparam param="imu0_config">[false, false, false,
+                                     true,  true,  true,
+                                     false, false, false,
+                                     true,  true,  true,
+                                     true,  false,  true]</rosparam>
+
+      <!-- The best practice for including new sensors in robot_localization's state estimation nodes is to pass in velocity
+           measurements and let the nodes integrate them. However, this isn't always feasible, and so the state estimation
+           nodes support fusion of absolute measurements. If you have more than one sensor providing absolute measurements,
+           however, you may run into problems if your covariances are not large enough, as the sensors will inevitably
+           diverge from one another, causing the filter to jump back and forth rapidly. To combat this situation, you can
+           either increase the covariances for the variables in question, or you can simply set the sensor's differential
+           parameter to true. When differential mode is enabled, all absolute pose data is converted to velocity data by
+           differentiating the absolute pose measurements. These velocities are then integrated as usual. NOTE: this only
+           applies to sensors that provide absolute measurements, so setting differential to true for twit measurements has
+           no effect.
+
+           Users should take care when setting this to true for orientation variables: if you have only one source of
+           absolute orientation data, you should not set the differential parameter to true. This is due to the fact that
+           integration of velocities leads to slowly increasing error in the absolute (pose) variable. For position variables,
+           this is acceptable. For orientation variables, it can lead to trouble. Users should make sure that all orientation
+           variables have at least one source of absolute measurement. -->
+      <param name="odom0_differential" value="true"/>
+      <param name="imu0_differential" value="false"/>
+
+      <!-- When the node starts, if this parameter is true, then the first measurement is treated as a "zero point" for all
+           future measurements. While you can achieve the same effect with the differential paremeter, the key difference is
+           that the relative parameter doesn't cause the measurement to be converted to a velocity before integrating it. If
+           you simply want your measurements to start at 0 for a given sensor, set this to true. -->
+      <param name="odom0_relative" value="false"/>
+      <param name="imu0_relative" value="true"/>
+
+      <!-- If we're including accelerations in our state estimate, then we'll probably want to remove any acceleration that
+           is due to gravity for each IMU. If you don't want to, then set this to false. Defaults to false if unspecified. -->
+      <param name="imu0_remove_gravitational_acceleration" value="true"/>
+
+      <!-- If you're having trouble, try setting this to true, and then echo the /diagnostics_agg topic to see
+           if the node is unhappy with any settings or data. -->
+      <param name="print_diagnostics" value="true"/>
+
+      <!-- ======== ADVANCED PARAMETERS ======== -->
+
+      <!-- Most users will be able to remove these parameters from the launch file without any consequences. We recommend
+           that users do not set values for these parameters without having a thorough understanding of
+           the parameters do. -->
+
+      <!-- By default, the subscription queue size for each message type is 1. If you wish to increase that so as not
+           miss any messages (even if your frequency is set to a relatively small value), increase these. -->
+      <param name="odom0_queue_size" value="2"/>
+      <param name="imu0_queue_size" value="10"/>
+
+      <!-- If your data is subject to outliers, use these threshold settings, expressed as Mahalanobis distances, to control
+           how far away from the current vehicle state a sensor measurement is permitted to be. Each defaults to
+           numeric_limits<double>::max() if unspecified. -->
+      <param name="odom0_pose_rejection_threshold" value="5"/>
+      <param name="odom0_twist_rejection_threshold" value="1"/>
+      <param name="imu0_pose_rejection_threshold" value="0.3"/>
+      <param name="imu0_twist_rejection_threshold" value="0.1"/>
+      <param name="imu0_linear_acceleration_rejection_threshold" value="0.1"/>
+
+      <!-- Debug settings. Not for the faint of heart. Outputs a ludicrous amount of information to the file
+           specified by debug_out_file. I hope you like matrices! Defaults to false if unspecified. -->
+      <param name="debug"           value="false"/>
+      <!-- Defaults to "robot_localization_debug.txt" if unspecified. -->
+      <param name="debug_out_file"  value="debug_ekf_localization.txt"/>
+
+      <!-- The process noise covariance matrix can be difficult to tune, and can vary for each application, so it
+           is exposed as a configuration parameter. The values are ordered as x, y, z, roll, pitch, yaw, vx, vy, vz,
+           vroll, vpitch, vyaw, ax, ay, az. Defaults to the matrix below if unspecified. -->
+      <rosparam param="process_noise_covariance">[0.05, 0,    0,    0,    0,    0,    0,     0,     0,    0,    0,    0,    0,    0,    0,
+                                                  0,    0.05, 0,    0,    0,    0,    0,     0,     0,    0,    0,    0,    0,    0,    0,
+                                                  0,    0,    0.06, 0,    0,    0,    0,     0,     0,    0,    0,    0,    0,    0,    0,
+                                                  0,    0,    0,    0.03, 0,    0,    0,     0,     0,    0,    0,    0,    0,    0,    0,
+                                                  0,    0,    0,    0,    0.03, 0,    0,     0,     0,    0,    0,    0,    0,    0,    0,
+                                                  0,    0,    0,    0,    0,    0.06, 0,     0,     0,    0,    0,    0,    0,    0,    0,
+                                                  0,    0,    0,    0,    0,    0,    0.025, 0,     0,    0,    0,    0,    0,    0,    0,
+                                                  0,    0,    0,    0,    0,    0,    0,     0.025, 0,    0,    0,    0,    0,    0,    0,
+                                                  0,    0,    0,    0,    0,    0,    0,     0,     0.04, 0,    0,    0,    0,    0,    0,
+                                                  0,    0,    0,    0,    0,    0,    0,     0,     0,    0.01, 0,    0,    0,    0,    0,
+                                                  0,    0,    0,    0,    0,    0,    0,     0,     0,    0,    0.01, 0,    0,    0,    0,
+                                                  0,    0,    0,    0,    0,    0,    0,     0,     0,    0,    0,    0.02, 0,    0,    0,
+                                                  0,    0,    0,    0,    0,    0,    0,     0,     0,    0,    0,    0,    0.01, 0,    0,
+                                                  0,    0,    0,    0,    0,    0,    0,     0,     0,    0,    0,    0,    0,    0.01, 0,
+                                                  0,    0,    0,    0,    0,    0,    0,     0,     0,    0,    0,    0,    0,    0,    0.015]</rosparam>
+
+      <!-- This represents the initial value for the state estimate error covariance matrix. Setting a diagonal value (a
+           variance) to a large value will result in early measurements for that variable being accepted quickly. Users should
+           take care not to use large values for variables that will not be measured directly. The values are ordered as x, y,
+           z, roll, pitch, yaw, vx, vy, vz, vroll, vpitch, vyaw, ax, ay, az. Defaults to the matrix below if unspecified. -->
+           <rosparam param="initial_estimate_covariance">[1e-9, 0,    0,    0,    0,    0,    0,    0,    0,    0,     0,     0,     0,    0,    0,
+                                                          0,    1e-9, 0,    0,    0,    0,    0,    0,    0,    0,     0,     0,     0,    0,    0,
+                                                          0,    0,    1e-9, 0,    0,    0,    0,    0,    0,    0,     0,     0,     0,    0,    0,
+                                                          0,    0,    0,    1e-9, 0,    0,    0,    0,    0,    0,     0,     0,     0,    0,    0,
+                                                          0,    0,    0,    0,    1e-9, 0,    0,    0,    0,    0,     0,     0,     0,    0,    0,
+                                                          0,    0,    0,    0,    0,    1e-9, 0,    0,    0,    0,     0,     0,     0,    0,    0,
+                                                          0,    0,    0,    0,    0,    0,    1e-9, 0,    0,    0,     0,     0,     0,    0,    0,
+                                                          0,    0,    0,    0,    0,    0,    0,    1e-9, 0,    0,     0,     0,     0,    0,    0,
+                                                          0,    0,    0,    0,    0,    0,    0,    0,    1e-9, 0,     0,     0,     0,    0,    0,
+                                                          0,    0,    0,    0,    0,    0,    0,    0,    0,    1e-9,  0,     0,     0,    0,    0,
+                                                          0,    0,    0,    0,    0,    0,    0,    0,    0,    0,     1e-9,  0,     0,    0,    0,
+                                                          0,    0,    0,    0,    0,    0,    0,    0,    0,    0,     0,     1e-9,  0,    0,    0,
+                                                          0,    0,    0,    0,    0,    0,    0,    0,    0,    0,     0,     0,     1e-9, 0,    0,
+                                                          0,    0,    0,    0,    0,    0,    0,    0,    0,    0,     0,     0,     0,    1e-9, 0,
+                                                          0,    0,    0,    0,    0,    0,    0,    0,    0,    0,     0,     0,     0,    0,    1e-9]</rosparam>
+
+
+      <!--  Placeholder for output topic remapping -->
+      <remap from="odometry/filtered" to="odometry/continuous_filtered"/>
+      
+
+    </node>
+
+</launch>

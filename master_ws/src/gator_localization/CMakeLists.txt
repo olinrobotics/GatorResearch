@@ -7,14 +7,12 @@ project(gator_localization)
 find_package(catkin REQUIRED COMPONENTS
   amcl
   gator_communication
-  ##gator_mapping
   gator_odom
   geometry_msgs
   nav_msgs
   robot_localization
   roscpp
   rospy
-  sensor_msgs
   std_msgs
 )
 
@@ -75,7 +73,7 @@ find_package(catkin REQUIRED COMPONENTS
 ## Generate added messages and services with any dependencies listed here
 # generate_messages(
 #   DEPENDENCIES
-#   gator_msgs#   geometry_msgs#   nav_msgs#   sensor_msgs#   std_msgs
+#   geometry_msgs#   nav_msgs#   std_msgs
 # )
 
 ################################################
@@ -110,7 +108,7 @@ find_package(catkin REQUIRED COMPONENTS
 catkin_package(
 #  INCLUDE_DIRS include
 #  LIBRARIES gator_localization
-#  CATKIN_DEPENDS amcl gator_communication gator_mapping gator_msgs gator_odom geometry_msgs nav_msgs robot_localization roscpp rospy sensor_msgs std_msgs
+#  CATKIN_DEPENDS amcl gator_communication gator_odom geometry_msgs nav_msgs robot_localization roscpp rospy std_msgs
 #  DEPENDS system_lib
 )
 

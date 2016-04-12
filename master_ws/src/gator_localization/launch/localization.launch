@@ -1,0 +1,5 @@
+<launch>
+	<include file="$(find gator_localization)/launch/ekf_loc_cont.launch" />
+	<include file="$(find gator_localization)/launch/ekf_loc_gps.launch" />
+	<include file="$(find gator_localization)/launch/navsat_transform.launch" />
+</launch>

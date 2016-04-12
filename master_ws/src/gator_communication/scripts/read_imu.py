@@ -8,7 +8,7 @@ import rospy
 
 def main():
     port = 5020
-    name = 'IMU'
+    name = 'IMU_ned'
     rate = 30  # Hz
     rospy.init_node('read_imu', anonymous=False)
     publisher = rospy.Publisher(name, Imu, queue_size=5)
