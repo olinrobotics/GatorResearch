@@ -1,0 +1,5 @@
+<launch>
+	<include file="$(find gator_communication)/launch/sensors.launch" />
+	<include file="$(find gator_description)/launch/gator_state_pub.launch" />
+
+</launch>

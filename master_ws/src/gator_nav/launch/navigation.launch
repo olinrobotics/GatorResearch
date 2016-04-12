@@ -1,0 +1,5 @@
+<launch>
+	<include file="$(find gator_nav)/launch/gator_configuration.launch" />
+	<include file="$(find gator_nav)/launch/move_base.launch" />
+
+</launch>
