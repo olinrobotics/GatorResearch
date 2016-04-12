@@ -29,19 +29,19 @@ class WheelOdometryNode(object):
     Publishes after new rear wheel data AND new steer angle data received.
     """
 
-    def __init__(self, pub_odom, wheel_vel_topic, wheel_vel_type,
+    def __init__(self, pub_odom, wheel_dist_topic, wheel_dist_type,
                  steer_angle_topic, steer_angle_type, frame_id, child_frame_id, broadcast_tf):
         """
             Args:
                 pub_odom (rospy.Publisher()): Configured ROS odometry publisher
-                wheel_vel_topic (str): Name of a topic publishing wheel
-                    velocity information in meters per second.
-                wheel_vel_type (msg type): Data type of a topic publishing
-                    wheel velocity information in meters per second.
+                wheel_dist_topic (str): Name of a topic publishing wheel
+                    distance information in meters.
+                wheel_dist_type (msg type): Data type of a topic publishing
+                    wheel distance information in meters.
                 steer_angle_topic (str): Name of a topic publishing steering
-                     angle information
+                     angle information in radians.
                 steer_angle_type (msg type): Data of a topic publishing
-                    steering angle information
+                    steering angle information in radians.
                 frame_id (str): Name of the wheel odometry frame.
                 child_frame_id (str): Name of the wheel odometry's child frame.
                 broadcast_tf (bool): If True, this node will also publish a transform
@@ -54,8 +54,8 @@ class WheelOdometryNode(object):
         if broadcast_tf:
             self.tf_br = tf.TransformBroadcaster()
         self.wheel_sub = rospy.Subscriber(
-            wheel_vel_topic,
-            wheel_vel_type,
+            wheel_dist_topic,
+            wheel_dist_type,
             self.cb_wheel
         )
         self.angle_sub = rospy.Subscriber(
