@@ -162,7 +162,7 @@ class WheelOdometryNode(object):
 
 def main():
     pub = rospy.Publisher('wheel_odom', Odometry, queue_size=10)
-    wheel_topic = "/sensors/vehicle_state/wheel_vel"
+    wheel_topic = "/sensors/vehicle_state/odometer"
     wheel_type = Float64
 
     steer_topic = "/sensors/vehicle_state/steer_angle"

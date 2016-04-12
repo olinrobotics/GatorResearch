@@ -36,5 +36,9 @@
             <node pkg="gator_communication" type="convert_imu.py" name="convert_imu" output="screen">
             </node>
         </group>
+        <group ns="gps">
+            <node pkg="gator_communication" type="read_gps.py" name="gps_gator" output="screen">
+            </node>
+        </group>
     </group>
 </launch>
