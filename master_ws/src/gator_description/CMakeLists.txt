@@ -5,16 +5,6 @@ project(gator_description)
 ## if COMPONENTS list like find_package(catkin REQUIRED COMPONENTS xyz)
 ## is used, also find other catkin packages
 find_package(catkin REQUIRED COMPONENTS
-<<<<<<< HEAD:master_ws/src/gator_localization/CMakeLists.txt
-  amcl
-  gator_communication
-##  gator_mapping
-  gator_odom
-  geometry_msgs
-  nav_msgs
-  robot_localization
-=======
->>>>>>> origin:master_ws/src/gator_description/CMakeLists.txt
   roscpp
   rospy
   std_msgs

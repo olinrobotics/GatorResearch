@@ -2,13 +2,14 @@
 
 import rospy
 from nav_msgs.msg import Odometry
-from geometry_msgs.msg import Point, Quaternion, TransformStamped
+from geometry_msgs.msg import Point, Quaternion, TransformStamped, Vector3
 from std_msgs.msg import Float32, Float64
 
 import tf
 from tf import transformations
 
 from math import radians, sin, cos, tan
+from time import clock
 
 
 def publish_on_new(func):
@@ -28,15 +29,15 @@ class WheelOdometryNode(object):
     Publishes after new rear wheel data AND new steer angle data received.
     """
 
-    def __init__(self, pub_odom, wheel_dist_topic, wheel_dist_type,
+    def __init__(self, pub_odom, wheel_vel_topic, wheel_vel_type,
                  steer_angle_topic, steer_angle_type, frame_id, child_frame_id, broadcast_tf):
         """
             Args:
                 pub_odom (rospy.Publisher()): Configured ROS odometry publisher
-                wheel_dist_topic (str): Name of a topic publishing wheel
-                    distance information
-                wheel_dist_type (msg type): Data type of a topic publishing
-                    wheel distance information
+                wheel_vel_topic (str): Name of a topic publishing wheel
+                    velocity information
+                wheel_vel_type (msg type): Data type of a topic publishing
+                    wheel velocity information
                 steer_angle_topic (str): Name of a topic publishing steering
                      angle information
                 steer_angle_type (msg type): Data of a topic publishing
@@ -53,8 +54,8 @@ class WheelOdometryNode(object):
         if broadcast_tf:
             self.tf_br = tf.TransformBroadcaster()
         self.wheel_sub = rospy.Subscriber(
-            wheel_dist_topic,
-            wheel_dist_type,
+            wheel_vel_topic,
+            wheel_vel_type,
             self.cb_wheel
         )
         self.angle_sub = rospy.Subscriber(
@@ -76,6 +77,13 @@ class WheelOdometryNode(object):
         self.y_est = 0
         self.theta_est = 0  # Theta measured from +x axis towards +y axis
 
+        self.vx_calc = 0  # Linear velocity in x direction
+        self.vy_calc = 0  # Linear velocity in y direction
+
+        self.az_calc = 0  # Angular velocity around Z axis
+
+        self._prev_time = None
+
         self.NEW_DATA_PAIR = False
 
     @publish_on_new
@@ -87,18 +95,32 @@ class WheelOdometryNode(object):
         self.steer_data = data
 
     def compute_odom(self):
-
+        current_time = clock()
         steer_rad = radians(self.steer_data)
         d_dr = self.wheel_data
         d_theta = d_dr/self.vehicle_length * tan(steer_rad)
         dx = d_dr * cos(self.theta_est + d_theta/2)
         dy = d_dr * sin(self.theta_est + d_theta/2)
+
         self.x_est += dx
         self.y_est += dy
         self.theta_est += d_theta
+        if self._prev_time is None:
+            self._prev_time = current_time
+            return -1
+
+        dt = float(current_time - self._prev_time)
+        self.vx_calc = dx/dt
+        self.vy_calc = dy/dt
+
+        self.az_calc = d_theta/dt
+        self._prev_time = current_time
+        return 1
 
     def publish_odom_msg(self):
-        self.compute_odom()
+        publish = self.compute_odom()
+        if publish is -1:  # Does not publish first reading, which may have inaccurate computed velocities.
+            return
         quat_rot = transformations.quaternion_from_euler(0, 0, self.theta_est, 'sxyz')
         cur_time = rospy.Time.now()
         if self.broadcast_tf:
@@ -117,6 +139,8 @@ class WheelOdometryNode(object):
         msg.child_frame_id = self.child_frame_id
         msg.pose.pose.position = Point(self.x_est, self.y_est, 0)  # z = 0
         msg.pose.pose.orientation = quat_rot
+        msg.twist.twist.linear = Vector3(self.vx_calc, self.vy_calc, 0)  # z-velocity = 0
+        msg.twist.twist.angular = Vector3(0, 0, self.az_calc)  # No x- or y- angular velocity.
 
         self.pub.publish()
 
