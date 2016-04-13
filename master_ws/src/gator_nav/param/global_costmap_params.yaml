@@ -1,0 +1,6 @@
+global_costmap:
+  global_frame: /map
+  robot_base_frame: BaseGator
+  update_frequency: 10.0
+  #JP TODO: Set the static_map to true when we implement map server
+  static_map: false
