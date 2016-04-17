@@ -1,0 +1,8 @@
+<launch>
+    <group ns="odometry">
+            <node pkg="gator_odom" type="wheel_odom.py" name="wheel_odometry" output="screen">
+            </node>
+            <param name="vehicle_length" value="1.905" type="double">
+            </param>
+    </group>
+</launch>

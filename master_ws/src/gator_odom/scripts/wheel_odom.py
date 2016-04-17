@@ -2,13 +2,13 @@
 
 import rospy
 from nav_msgs.msg import Odometry
-from geometry_msgs.msg import Point, Quaternion, TransformStamped, Vector3
-from std_msgs.msg import Float32, Float64
+from geometry_msgs.msg import Point, TransformStamped, Vector3
+from std_msgs.msg import Float64
 
 import tf
 from tf import transformations
 
-from math import radians, sin, cos, tan
+from math import sin, cos, tan
 from time import clock
 
 
@@ -70,7 +70,7 @@ class WheelOdometryNode(object):
         self.wheel_data = None
         self.steer_data = None
 
-        self.vehicle_length = float(rospy.get_param('vehicle_length'))  # Len. from rear diff to fr. axle
+        self.vehicle_length = rospy.get_param('vehicle_length')  # Len. from rear diff to fr. axle
 
         # Assume starting at the origin & vehicle facing +x direction
         self.x_est = 0
@@ -88,15 +88,15 @@ class WheelOdometryNode(object):
 
     @publish_on_new
     def cb_wheel(self, data):
-        self.wheel_data = data
+        self.wheel_data = data.data
 
     @publish_on_new
     def cb_steer(self, data):
-        self.steer_data = data
+        self.steer_data = data.data
 
     def compute_odom(self):
         current_time = clock()
-        steer_rad = radians(self.steer_data)
+        steer_rad = self.steer_data
         d_dr = self.wheel_data
         d_theta = d_dr/self.vehicle_length * tan(steer_rad)
         dx = d_dr * cos(self.theta_est + d_theta/2)
@@ -159,6 +159,7 @@ class WheelOdometryNode(object):
 
     def go(self):
         rospy.spin()
+
 
 def main():
     pub = rospy.Publisher('wheel_odom', Odometry, queue_size=10)
