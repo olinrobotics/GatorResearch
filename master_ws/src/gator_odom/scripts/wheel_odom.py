@@ -2,13 +2,14 @@
 
 import rospy
 from nav_msgs.msg import Odometry
-from geometry_msgs.msg import Point, Quaternion, TransformStamped
-from std_msgs.msg import Float32, Float64
+from geometry_msgs.msg import Point, TransformStamped, Vector3, Quaternion
+from std_msgs.msg import Float64
 
 import tf
 from tf import transformations
 
-from math import radians, sin, cos, tan
+from math import sin, cos, tan
+from time import clock
 
 
 def publish_on_new(func):
@@ -34,13 +35,13 @@ class WheelOdometryNode(object):
             Args:
                 pub_odom (rospy.Publisher()): Configured ROS odometry publisher
                 wheel_dist_topic (str): Name of a topic publishing wheel
-                    distance information
+                    distance information in meters.
                 wheel_dist_type (msg type): Data type of a topic publishing
-                    wheel distance information
+                    wheel distance information in meters.
                 steer_angle_topic (str): Name of a topic publishing steering
-                     angle information
+                     angle information in radians.
                 steer_angle_type (msg type): Data of a topic publishing
-                    steering angle information
+                    steering angle information in radians.
                 frame_id (str): Name of the wheel odometry frame.
                 child_frame_id (str): Name of the wheel odometry's child frame.
                 broadcast_tf (bool): If True, this node will also publish a transform
@@ -76,29 +77,50 @@ class WheelOdometryNode(object):
         self.y_est = 0
         self.theta_est = 0  # Theta measured from +x axis towards +y axis
 
+        self.vx_calc = 0  # Linear velocity in x direction
+        self.vy_calc = 0  # Linear velocity in y direction
+
+        self.az_calc = 0  # Angular velocity around Z axis
+
+        self._prev_time = None
+
         self.NEW_DATA_PAIR = False
 
     @publish_on_new
     def cb_wheel(self, data):
-        self.wheel_data = data
+        self.wheel_data = data.data
 
     @publish_on_new
     def cb_steer(self, data):
-        self.steer_data = data
+        self.steer_data = data.data
 
     def compute_odom(self):
-
-        steer_rad = radians(self.steer_data)
+        current_time = clock()
+        steer_rad = self.steer_data
         d_dr = self.wheel_data
         d_theta = d_dr/self.vehicle_length * tan(steer_rad)
         dx = d_dr * cos(self.theta_est + d_theta/2)
         dy = d_dr * sin(self.theta_est + d_theta/2)
+
         self.x_est += dx
         self.y_est += dy
         self.theta_est += d_theta
+        if self._prev_time is None:
+            self._prev_time = current_time
+            return -1
+
+        dt = float(current_time - self._prev_time)
+        self.vx_calc = dx/dt
+        self.vy_calc = dy/dt
+
+        self.az_calc = d_theta/dt
+        self._prev_time = current_time
+        return 1
 
     def publish_odom_msg(self):
-        self.compute_odom()
+        publish = self.compute_odom()
+        if publish is -1:  # Does not publish first reading, which may have inaccurate computed velocities.
+            return
         quat_rot = transformations.quaternion_from_euler(0, 0, self.theta_est, 'sxyz')
         cur_time = rospy.Time.now()
         if self.broadcast_tf:
@@ -116,16 +138,32 @@ class WheelOdometryNode(object):
         msg.header.frame_id = self.frame_id
         msg.child_frame_id = self.child_frame_id
         msg.pose.pose.position = Point(self.x_est, self.y_est, 0)  # z = 0
-        msg.pose.pose.orientation = quat_rot
+        msg.pose.pose.orientation = Quaternion(*quat_rot)
+        msg.pose.covariance = [1e-3, 0, 0, 0, 0, 0,  # 1e-3 is TurtleBot
+                               0, 1e-3, 0, 0, 0, 0,  # default wheel odom
+                               0, 0, 1e-3, 0, 0, 0,  # covariances.
+                               0, 0, 0, 1e-3, 0, 0,  # Tune if necessary.
+                               0, 0, 0, 0, 1e-3, 0,  # UMBmark?
+                               0, 0, 0, 0, 0, 1e-3]
 
-        self.pub.publish()
+        msg.twist.twist.linear = Vector3(self.vx_calc, self.vy_calc, 0)  # z-velocity = 0
+        msg.twist.twist.angular = Vector3(0, 0, self.az_calc)  # No x- or y- angular velocities
+        msg.twist.covariance = [1e-3, 0, 0, 0, 0, 0,  # 1e-3 is TurtleBot
+                                0, 1e-3, 0, 0, 0, 0,  # default wheel odom
+                                0, 0, 1e-3, 0, 0, 0,  # covariances.
+                                0, 0, 0, 1e-3, 0, 0,  # Tune if necessary.
+                                0, 0, 0, 0, 1e-3, 0,  # UMBmark?
+                                0, 0, 0, 0, 0, 1e-3]
+
+        self.pub.publish(msg)
 
     def go(self):
         rospy.spin()
 
+
 def main():
     pub = rospy.Publisher('wheel_odom', Odometry, queue_size=10)
-    wheel_topic = "/sensors/vehicle_state/wheel_vel"
+    wheel_topic = "/sensors/vehicle_state/odometer"
     wheel_type = Float64
 
     steer_topic = "/sensors/vehicle_state/steer_angle"
