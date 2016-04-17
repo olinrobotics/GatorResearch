@@ -2,7 +2,7 @@
 
 import rospy
 from nav_msgs.msg import Odometry
-from geometry_msgs.msg import Point, TransformStamped, Vector3
+from geometry_msgs.msg import Point, TransformStamped, Vector3, Quaternion
 from std_msgs.msg import Float64
 
 import tf
@@ -138,7 +138,7 @@ class WheelOdometryNode(object):
         msg.header.frame_id = self.frame_id
         msg.child_frame_id = self.child_frame_id
         msg.pose.pose.position = Point(self.x_est, self.y_est, 0)  # z = 0
-        msg.pose.pose.orientation = quat_rot
+        msg.pose.pose.orientation = Quaternion(*quat_rot)
         msg.pose.covariance = [1e-3, 0, 0, 0, 0, 0,  # 1e-3 is TurtleBot
                                0, 1e-3, 0, 0, 0, 0,  # default wheel odom
                                0, 0, 1e-3, 0, 0, 0,  # covariances.
@@ -153,9 +153,9 @@ class WheelOdometryNode(object):
                                 0, 0, 1e-3, 0, 0, 0,  # covariances.
                                 0, 0, 0, 1e-3, 0, 0,  # Tune if necessary.
                                 0, 0, 0, 0, 1e-3, 0,  # UMBmark?
-                                0, 0, 0, 0, 0, 1e-3] 
+                                0, 0, 0, 0, 0, 1e-3]
 
-        self.pub.publish()
+        self.pub.publish(msg)
 
     def go(self):
         rospy.spin()
