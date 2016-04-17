@@ -96,7 +96,7 @@
 
       <remap from="/odometry/filtered" to="/odometry/continuous_filtered"/>
 
-      <!-- <remap from="/gps/fix" to=""/> -->
+      <remap from="/gps/fix" to="/sensors/gps/fix"/>
 
      
       <!-- Placeholders for output remapping -->
