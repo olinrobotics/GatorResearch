@@ -70,7 +70,7 @@ class WheelOdometryNode(object):
         self.wheel_data = None
         self.steer_data = None
 
-        self.vehicle_length = rospy.get_param('vehicle_length')  # Len. from rear diff to fr. axle
+        self.vehicle_length = float(rospy.get_param('vehicle_length'))  # Len. from rear diff to fr. axle
 
         # Assume starting at the origin & vehicle facing +x direction
         self.x_est = 0
