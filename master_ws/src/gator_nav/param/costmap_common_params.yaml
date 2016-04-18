@@ -1,0 +1,15 @@
+#Set obstacle range to 25 meters because Gator needs to see far in front of it if it is driving fast
+obstacle_range: 25
+
+#Set raytrace range to 5 meters so that Gator tries to keep a 5 meter path in front of it clear 
+raytrace_range: 5.0
+
+footprint: [[1.33, 0.8], [1.33, -0.8], [-1.33, -0.8], [-1.33, 0.8]]
+#robot_radius: ir_of_robot
+inflation_radius: 3
+
+#JP TODO: the costmaps won't update until these observation source parameters are set. I've set them to the best of my knowledge but left
+#them commented out. When they actually exist, we should turn these back on. 
+
+#observation_sources: point_cloud_sensor
+#point_cloud_sensor: {sensor_frame: front_pont_cloud, data_type: PointCloud, topic: /sensors/front_pt_cloud, marking: true, clearing: true}

@@ -1,0 +1,13 @@
+local_costmap:
+  global_frame: odom
+  robot_base_frame: BaseGator
+  update_frequency: 10.0
+  publish_frequency: 10.0
+
+  #JP TODO: Set the static_map to true when we implement map server
+  static_map: false
+
+  rolling_window: true
+  width: 10.0
+  height: 10.0
+  resolution: 0.05

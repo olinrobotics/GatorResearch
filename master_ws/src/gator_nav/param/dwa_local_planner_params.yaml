@@ -1,0 +1,68 @@
+#ROBOT CONFIG
+LocalPlanner:
+  # nits in m/s^2
+  accel_lim_x: 1
+  accel_lim_y: 1
+  #units of radians/s^2 
+  acc_lim_th: 1
+  #units in m/s
+  max_trans_vel: 6.5
+  min_trans_vel: 0
+  #units in m/s
+  max_vel_x: 6.5
+  min_vel_x: 0 
+  max_vel_y: 6.5 
+  min_vel_y: 0
+  #units in rad/s
+  max_rot_vel: 1
+  min_rot_vel: 0
+
+  #GOAL TOLERANCE
+  #units in rad
+  yaw_goal_tolerance: .05
+  #tolerance in m
+  xy_goal_tolerance: .1
+  #If goal tolerance is latched, if the robot ever reaches the goal xy location it will
+  #simply rotate in place, even if it ends up outside the goal tolerance while it is doing so.
+  latch_xy_goal_tolerance: false
+
+  #SIMULATOR PARAMS
+  #units in s
+  sim_time: 5
+  #step size in m
+  sim_granularity: .25
+  #samples to consider in x
+  vx_samples: 3
+  #samples to consider in y
+  vy_samples: 10
+  #samples to consider in theta
+  vtheta_samples: 20
+  #units in Hz. Number of times simulator called
+  controller_frequency: 20.0
+  #do we penalize negative trajectories?
+  penalize_negative_x: true
+
+  #TRAJECTORY SCORING
+  #How close to planned trajectory
+  path_distance_bias: 32.0
+  #The weighting for how much the controller should attempt to reach its local goal, also controls speed
+  goal_distance_bias: 24.0
+  #How much should I try to avoid obstacles
+  occdist_scale: .01
+  #The distance from the center point of the robot to place an additional scoring point, in meters
+  forward_point_distance: 1
+  #The amount of time that the robot must stop before a collision in order for a trajectory to be considered valid in seconds
+  stop_time_buffer: 2
+  #The absolute value of the veolicty at which to start scaling the robot's footprint, in m/s
+  scaling_speed: .25
+  #The maximum factor to scale the robot's footprint by
+  max_scaling_factor: .2
+
+  #Oscillation Prevention Parameters
+  #How far the robot must travel in meters before oscillation flags are reset
+  oscillation_reset_dist: .05
+
+  #Global Plan Parameters
+  #Defines whether or not to eat up the plan as the robot moves along the path. If set to true, points will fall off the end of 
+  #the plan once the robot moves 1 meter past them.
+  prune_plan: true
