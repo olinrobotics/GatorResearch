@@ -92,7 +92,7 @@
         <!-- <rosparam param="datum">[55.944904, -3.186693, 0.0, map, base_link]</rosparam> -->
 
       <!-- Placeholders for input remapping. Set your topic names as the "to" values. -->
-      <remap from="/imu/data" to="/sensors/imu"/>
+      <remap from="/imu/data" to="/sensors/imu/data"/>
 
       <remap from="/odometry/filtered" to="/odometry/continuous_filtered"/>
 
@@ -102,7 +102,7 @@
       <!-- Placeholders for output remapping -->
       <!-- <remap from="/odometry/gps" to=""/> -->
 
-      <!-- <remap from="/gps/filtered" to=""/> -->
+      <remap from="/gps/filtered" to="/sensors/gps/filtered"/>
 
      
     </node>

@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 
 from std_msgs.msg import Float64
+from math import radians
 import rospy
 
 
@@ -9,8 +10,8 @@ class SteerConversion(object):
     def __init__(self):
         super(SteerConversion, self).__init__()
         rospy.init_node('convert_steer_angle', anonymous=True)
-        self.pub = rospy.Publisher('imu/data', Float64, queue_size=10)
-        self.sub = rospy.Subscriber('IMU_ned', Float64, self.convert_angle)
+        self.pub = rospy.Publisher('steer_angle_rad', Float64, queue_size=10)
+        self.sub = rospy.Subscriber('steer_angle', Float64, self.convert_angle)
 
     def convert_angle(self, in_angle):
         """
@@ -18,13 +19,12 @@ class SteerConversion(object):
         (of the front wheels) in radians. Publishes this new value to
         self.pub.
         """
-
         # According to Midbrain.VI, steering wheel angle is converted to
         # an orientation angle by dividing by 10 degrees.
-        steer_angle_deg = in_angle / 10.
+        steer_angle_deg = -(in_angle.data / 16.)
 
         # Convert from degrees to radians
-        out_angle = Float64()
+        out_angle = Float64(radians(steer_angle_deg))
 
         self.pub.publish(out_angle)
 

@@ -83,12 +83,14 @@ class WheelOdometryNode(object):
         self.az_calc = 0  # Angular velocity around Z axis
 
         self._prev_time = None
+        self._prev_odometer = 0
 
         self.NEW_DATA_PAIR = False
 
     @publish_on_new
     def cb_wheel(self, data):
-        self.wheel_data = data.data
+        self.wheel_data = data.data - self._prev_odometer
+        self._prev_odometer = float(data.data)
 
     @publish_on_new
     def cb_steer(self, data):
@@ -98,7 +100,7 @@ class WheelOdometryNode(object):
         current_time = clock()
         steer_rad = self.steer_data
         d_dr = self.wheel_data
-        d_theta = d_dr/self.vehicle_length * tan(steer_rad)
+        d_theta = d_dr/float(self.vehicle_length) * float(tan(steer_rad))
         dx = d_dr * cos(self.theta_est + d_theta/2)
         dy = d_dr * sin(self.theta_est + d_theta/2)
 
@@ -130,9 +132,9 @@ class WheelOdometryNode(object):
             tf_msg.child_frame_id = "wheel_odom_bl"
             tf_msg.transform.translation.x = self.x_est
             tf_msg.transform.translation.y = self.y_est
-            tf_msg.transform.translation.z = self.z_est
-            tf_msg.transform.rotation = self.quat_rot
-            self.tf_br.sendTransform(tf_msg)
+            tf_msg.transform.translation.z = 0
+            tf_msg.transform.rotation = Quaternion(*quat_rot)
+            self.tf_br.sendTransform((self.x_est, self.y_est, 0), quat_rot, rospy.Time.now(), self.child_frame_id, self.frame_id)
         msg = Odometry()
         msg.header.stamp = cur_time
         msg.header.frame_id = self.frame_id
@@ -166,10 +168,10 @@ def main():
     wheel_topic = "/sensors/vehicle_state/odometer"
     wheel_type = Float64
 
-    steer_topic = "/sensors/vehicle_state/steer_angle"
+    steer_topic = "/sensors/vehicle_state/steer_angle_rad"
     steer_type = Float64
     rospy.init_node('wheel_odom', anonymous=True)
-    odom = WheelOdometryNode(pub, wheel_topic, wheel_type, steer_topic, steer_type, "wheel_odom", "wheel_odom_bl", False)
+    odom = WheelOdometryNode(pub, wheel_topic, wheel_type, steer_topic, steer_type, "odom", "BaseGator", True)
     odom.go()
 
 if __name__ == '__main__':

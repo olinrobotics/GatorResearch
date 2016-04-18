@@ -19,8 +19,8 @@
            TwistStamped, Imu). To add a new one, simply append the next number in the sequence to its base name,
            e.g., odom0, odom1, twist0, twist1, imu0, imu1, imu2, etc. The value should be the topic name. These
            parameters obviously have no default values, and must be specified. -->
-      <param name="odom0" value="/wheel_odom"/>
-      <param name="imu0" value="/imu/data"/>
+      <param name="odom0" value="/odometry/wheel_odom"/>
+      <param name="imu0" value="/sensors/imu/data"/>
 
       <!-- Each sensor reading updates some or all of the filter's state. These options give you greater control over
            which values from each measurement are fed to the filter. For example, if you have an odometry message as input,
@@ -39,7 +39,7 @@
                                      true,  true,  true,
                                      false, false, false,
                                      true,  true,  true,
-                                     true,  false,  true]</rosparam>
+                                     true,  true,  true]</rosparam>
 
       <!-- The best practice for including new sensors in robot_localization's state estimation nodes is to pass in velocity
            measurements and let the nodes integrate them. However, this isn't always feasible, and so the state estimation
