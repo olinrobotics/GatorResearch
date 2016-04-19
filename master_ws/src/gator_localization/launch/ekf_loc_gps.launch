@@ -20,7 +20,7 @@
            e.g., odom0, odom1, twist0, twist1, imu0, imu1, imu2, etc. The value should be the topic name. These
            parameters obviously have no default values, and must be specified. -->
       <param name="odom0" value="/odometry/gps"/>
-      <param name="odom1" value="/odometry/continuous_filtered"/>
+      <param name="odom1" value="/odometry/wheel_odom"/>
 
       <!-- Each sensor reading updates some or all of the filter's state. These options give you greater control over
            which values from each measurement are fed to the filter. For example, if you have an odometry message as input,
@@ -30,14 +30,14 @@
            the first six values would be meaningless in that case. Each vector defaults to all false if unspecified, effectively
            making this parameter required for each sensor. -->
       <rosparam param="odom0_config">[true, true, true,
-                                      false, false, false,
+                                      true, true, true,
                                       false,  false, false,
                                       false, false, false,
                                       false, false, false]</rosparam>
 
       <rosparam param="odom1_config">[false, false, false,
-                                     true,  true,  true,
-                                     false, false, false,
+                                     false,  false,  false,
+                                     true, true, true,
                                      false,  false,  false,
                                      false,  false,  false]</rosparam>
 
@@ -58,7 +58,7 @@
            this is acceptable. For orientation variables, it can lead to trouble. Users should make sure that all orientation
            variables have at least one source of absolute measurement. -->
       <param name="odom0_differential" value="false"/>
-      <param name="odom1_differential" value="false"/>
+      <param name="odom1_differential" value="true"/>
 
       <!-- When the node starts, if this parameter is true, then the first measurement is treated as a "zero point" for all
            future measurements. While you can achieve the same effect with the differential paremeter, the key difference is
@@ -85,10 +85,10 @@
       <!-- If your data is subject to outliers, use these threshold settings, expressed as Mahalanobis distances, to control
            how far away from the current vehicle state a sensor measurement is permitted to be. Each defaults to
            numeric_limits<double>::max() if unspecified. -->
-      <param name="odom0_pose_rejection_threshold" value="5"/>
+<!--       <param name="odom0_pose_rejection_threshold" value="5"/>
       <param name="odom0_twist_rejection_threshold" value="1"/>
       <param name="odom1_pose_rejection_threshold" value="5"/>
-      <param name="odom1_twist_rejection_threshold" value="1"/>
+      <param name="odom1_twist_rejection_threshold" value="1"/> -->
 
 
       <!-- Debug settings. Not for the faint of heart. Outputs a ludicrous amount of information to the file

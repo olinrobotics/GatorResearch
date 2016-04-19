@@ -21,7 +21,7 @@ class SteerConversion(object):
         """
         # According to Midbrain.VI, steering wheel angle is converted to
         # an orientation angle by dividing by 10 degrees.
-        steer_angle_deg = -(in_angle.data / 16.)
+        steer_angle_deg = -(in_angle.data / 16.99)
 
         # Convert from degrees to radians
         out_angle = Float64(radians(steer_angle_deg))

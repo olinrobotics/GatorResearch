@@ -94,7 +94,8 @@
       <!-- Placeholders for input remapping. Set your topic names as the "to" values. -->
       <remap from="/imu/data" to="/sensors/imu/data"/>
 
-      <remap from="/odometry/filtered" to="/odometry/continuous_filtered"/>
+      <!-- <remap from="/odometry/filtered" to="/odometry/continuous_filtered"/> -->
+      <remap from="/odometry/filtered" to="/odometry/wheel_odom"/>
 
       <remap from="/gps/fix" to="/sensors/gps/fix"/>
 

@@ -113,9 +113,9 @@ class WheelOdometryNode(object):
 
         dt = float(current_time - self._prev_time)
         dt = 0.033
-        print("DT", dt)
-        print("DX", dx)
-        print("DY", dy)
+        # print("DT", dt)
+        # print("DX", dx)
+        # print("DY", dy)
         self.vx_calc = dx/dt
         self.vy_calc = dy/dt
 
@@ -175,7 +175,7 @@ def main():
     steer_topic = "/sensors/vehicle_state/steer_angle_rad"
     steer_type = Float64
     rospy.init_node('wheel_odom', anonymous=True)
-    odom = WheelOdometryNode(pub, wheel_topic, wheel_type, steer_topic, steer_type, "odom", "wheel_odom_bl", True)
+    odom = WheelOdometryNode(pub, wheel_topic, wheel_type, steer_topic, steer_type, "odom", "BaseGator", True)
     odom.go()
 
 if __name__ == '__main__':
