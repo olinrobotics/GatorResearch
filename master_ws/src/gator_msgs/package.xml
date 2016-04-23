@@ -2,7 +2,7 @@
 <package>
   <name>gator_msgs</name>
   <version>0.0.1</version>
-  <description>Messages to support an autonomous John Deere Gator.</description>
+  <description>Custom message definitions to support an autonomous John Deere Gator.</description>
 
   <!-- One maintainer tag required, multiple allowed, one person per tag --> 
   <!-- Example:  -->
