@@ -1,0 +1,11 @@
+<launch>
+    <node name="pointcloud_assembly" output="screen" pkg="laser_assembler" type="point_cloud_assembler">
+        <remap from="cloud" to="/sensors/lidar/data/raw_pc"/>
+        <param name="max_clouds" type="int" value="400"/>
+        <param name="fixed_frame" type="string" value="BaseGator"/>
+    </node>
+    <node name="assembled_pointcloud_fetcher" output="screen" pkg="gator_lasers" type="fetch_assembled_pointcloud.py">
+        <remap from="assembled" to="/sensors/lidar/data/assembled"/>
+        <param name="pc2" type="bool" value="false"/>
+    </node>
+</launch>
