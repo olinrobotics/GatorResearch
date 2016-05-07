@@ -36,7 +36,7 @@ class SimplePublisher(UDPtoROS):
             "blocking": True,
             "timeout": 0.5
         }
-        super(SimplePublisher, self).__init__(socket_config)
+        super(SimplePublisher, self).__init__(socket_config, 4096)
         self.pub = publisher
         self.rate = rospy.Rate(rate_hz)
         self.decode_str = decode_str
@@ -89,7 +89,7 @@ class TopicPublisher(UDPtoROS):
             "blocking": True,
             "timeout": 0.5
         }
-        super(TopicPublisher, self).__init__(socket_config)
+        super(TopicPublisher, self).__init__(socket_config, 4096)
         self.pub = publisher
         self.rate = rospy.Rate(rate_hz)
         self._data_class = self.pub.data_class()

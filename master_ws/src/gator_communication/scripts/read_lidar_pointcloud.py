@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # read_gps.py
 
-from simple_udp import TopicPublisher
+from simple_udp import TopicPublisher, SimplePublisher
 from sensor_msgs.msg import PointCloud
 import rospy
 
@@ -13,6 +13,8 @@ def main():
     rospy.init_node('raw_pc', anonymous=False)
     publisher = rospy.Publisher(name, PointCloud, queue_size=3)
     lidar_pc = TopicPublisher(port, name, publisher, rate)
+    # lidar_pc = SimplePublisher(port, name, publisher, rate, ">" + "f"*179*3)
+
     lidar_pc.go()
 
 if __name__ == '__main__':
