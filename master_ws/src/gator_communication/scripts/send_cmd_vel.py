@@ -9,7 +9,7 @@ import rospy
 def main():
     local_port = 60015
     destination = {
-        "address": "192.168.1.11",
+        "address": "192.168.2.11",
         "port": 60015
     }
     name = 'cmd_vel'

@@ -3,7 +3,7 @@
 # Adapted from https://wiki.python.org/moin/UdpCommunication
 import socket
 
-UDP_IP = "192.168.1.10"
+UDP_IP = "192.168.2.10"
 UDP_PORT = 5015
 
 sock = socket.socket(socket.AF_INET, # Internet
