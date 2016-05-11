@@ -30,7 +30,7 @@ class SimplePublisher(UDPtoROS):
         """
         socket_config = {
             # TODO: Tie ip to ros parameter or environment variable.
-            "source_ip": "192.168.1.10",
+            "source_ip": "192.168.2.10",
             "local_port": port,
             "name": name,
             "blocking": True,
@@ -83,7 +83,7 @@ class TopicPublisher(UDPtoROS):
         """
         socket_config = {
             # TODO: Tie ip to ros parameter or environment variable.
-            "source_ip": "192.168.1.10",
+            "source_ip": "192.168.2.10",
             "local_port": port,
             "name": name,
             "blocking": True,
@@ -122,7 +122,7 @@ class OnDemandSubscriber(ROStoUDPonDemand):
     def __init__(self, port, name, destination):
         socket_config = {
             # TODO: Tie ip to ros parameter or environment variable.
-            "source_ip": "192.168.1.10",
+            "source_ip": "192.168.2.10",
             "local_port": port,
             "name": name,
         }
@@ -163,7 +163,7 @@ class CmdVelSubscriber(ROStoUDPonDemand):
     def __init__(self, port, name, destination):
         socket_config = {
             # TODO: Tie ip to ros parameter or environment variable.
-            "source_ip": "192.168.1.10",
+            "source_ip": "192.168.2.10",
             "local_port": port,
             "name": name,
         }

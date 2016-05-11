@@ -14,7 +14,7 @@ class OneSubscriber(ROStoUDP):
     def __init__(self, destination):
         rospy.init_node('test_node', anonymous=True)
         socket_config = {
-            "source_ip": "192.168.1.10",
+            "source_ip": "192.168.2.10",
             "local_port": 5016,
             "name": "test_sender",
             "blocking": False,
@@ -37,7 +37,7 @@ class OneSubscriber(ROStoUDP):
 
 def main():
     destination = {
-        "address": "192.168.1.11",
+        "address": "192.168.2.11",
         "port": 5051
     }
     subobj = OneSubscriber(destination)
